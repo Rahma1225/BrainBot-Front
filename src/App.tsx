@@ -7,6 +7,8 @@ import UserManagement from './components/UserManagement';
 import Settings from './components/Settings';
 import Layout from './layout/Layout';
 import { apiService } from './services/api';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import './App.css';
 
 function App() {
@@ -15,7 +17,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState({
     name: '',
     email: '',
-    role: 'user' as 'admin' | 'user' | 'moderator'
+    role: ''
   });
 
   // Check authentication status on app load
@@ -33,7 +35,7 @@ function App() {
             setCurrentUser({
               name: userInfo.userName || '',
               email: userInfo.email || '',
-              role: userInfo.role || 'user'
+              role: userInfo.role // Use the exact string from backend
             });
           } catch (error) {
             console.error('Error parsing stored user info:', error);
@@ -60,54 +62,25 @@ function App() {
       id: string;
       userName: string;
       email: string;
-      roles: string[];
+      role: string;
     };
     token?: string;
   }) => {
     console.log('Login successful:', userData);
     
     if (userData.userInfo) {
-      // Get the highest role from the database using role IDs
-      const roles = userData.userInfo.roles || [];
-      console.log('Role IDs received:', roles);
-      
-      let role: 'admin' | 'user' | 'moderator' = 'user';
-      
-      // Temporary role ID mapping until backend endpoints are ready
-      if (roles.length > 0) {
-        const roleId = roles[0];
-        console.log('Checking role ID:', roleId);
-        
-        // Map known role IDs to role names
-        if (roleId === '8e8af7ac-69ba-476a-8be0-682efb94555a') {
-          role = 'admin';
-          console.log('Mapped to admin role');
-        } else if (roleId === 'moderator-role-id') { // Replace with actual moderator role ID
-          role = 'moderator';
-          console.log('Mapped to moderator role');
-        } else {
-          role = 'user';
-          console.log('Mapped to user role (default)');
-        }
-      }
-      
-      const userInfo = {
+      setCurrentUser({
         name: userData.userInfo.userName,
         email: userData.userInfo.email,
-        role: role
-      };
-      
-      console.log('Final user info:', userInfo);
-      setCurrentUser(userInfo);
-      
+        role: userData.userInfo.role
+      });
       // Store user info in localStorage for persistence
       localStorage.setItem('user_info', JSON.stringify({
         userName: userData.userInfo.userName,
         email: userData.userInfo.email,
-        role: role
+        role: userData.userInfo.role
       }));
     }
-    
     setIsAuthenticated(true);
   };
 
@@ -153,6 +126,22 @@ function App() {
               </PublicRoute>
             } 
           />
+          <Route 
+            path="/forgot-password" 
+            element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/reset-password" 
+            element={
+              <PublicRoute>
+                <ResetPassword />
+              </PublicRoute>
+            } 
+          />
 
           {/* Protected Routes */}
           <Route 
@@ -169,9 +158,13 @@ function App() {
             path="/user-management"
             element={
               <ProtectedRoute>
-                <Layout onLogout={handleLogout} currentUser={currentUser}>
-                  <UserManagement currentUser={currentUser} />
-                </Layout>
+                {currentUser.role === 'admin' ? (
+                  <Layout onLogout={handleLogout} currentUser={currentUser}>
+                    <UserManagement currentUser={currentUser} />
+                  </Layout>
+                ) : (
+                  <Navigate to="/chatbot" replace />
+                )}
               </ProtectedRoute>
             }
           />

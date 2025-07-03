@@ -284,6 +284,7 @@
   font-size: 0.9rem;
   background: white;
   transition: all 0.3s ease;
+  color: #000 !important;
 }
 
 .search-input:focus {

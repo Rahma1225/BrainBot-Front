@@ -14,7 +14,7 @@ interface LoginProps {
       id: string;
       userName: string;
       email: string;
-      roles: string[];
+      role: string;
     };
     token?: string;
   }) => void;
@@ -43,35 +43,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLoading(true);
     setError('');
     setIsLockedAccount(false);
-    
+
     try {
       const response = await apiService.login({
         UserName: formData.username,
         Password: formData.password
       });
-      
-      console.log('Login response:', response);
-      
-      // Check if user is locked by getting all users and finding the current user
-      try {
-        const allUsers = await apiService.getUsers();
-        const currentUser = allUsers.find(user => user.userName === formData.username);
-        
-        if (currentUser) {
-          console.log('Current user details:', currentUser);
-          
-          if (currentUser.isLocked || (currentUser.lockoutEnd && new Date(currentUser.lockoutEnd) > new Date())) {
-            setError('Your account is locked. Please contact administration for assistance.');
-            setIsLockedAccount(true);
-            return;
-          }
-        }
-      } catch (err) {
-        console.error('Failed to check user lock status:', err);
-        // Continue with login if we can't check lock status
-      }
-      
-      // Store user info and token (handle case where token might not be present yet)
+
+      // Successful login
       onLogin({
         username: formData.username,
         password: formData.password,
@@ -79,22 +58,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           id: response.currentUser.id,
           userName: response.currentUser.userName,
           email: response.currentUser.email,
-          roles: response.currentUser.roles || []
+          role: response.currentUser.role
         },
         token: response.token
       });
-      
-      console.log('Login successful, token present:', !!response.token);
+
     } catch (err: any) {
       console.error('Login error:', err);
-      // Check if the error is due to locked account
-      if (err.message && err.message.toLowerCase().includes('locked')) {
+      if (err.errorType === 'ACCOUNT_LOCKED') {
         setError('Your account is locked. Please contact administration for assistance.');
         setIsLockedAccount(true);
-      } else if (err.message && err.message.toLowerCase().includes('invalid')) {
-        setError('Invalid username or password. Please check your credentials.');
+      } else if (err.message) {
+        setError(err.message);
       } else {
-        setError(err.message || 'Login failed. Please check your credentials.');
+        setError('Login failed. Please check your credentials.');
       }
     } finally {
       setIsLoading(false);
@@ -179,6 +156,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           >
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
+          <div style={{ textAlign: 'center', margin: '1rem 0 0.5rem 0' }}>
+            <button type="button" className="forgot-password-link" onClick={() => navigate('/forgot-password')}>
+              Forgot password?
+            </button>
+          </div>
           
           <div style={{ 
             textAlign: 'center', 
@@ -204,4 +186,4 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   );
 };
 
-export default Login; 
+export default Login;

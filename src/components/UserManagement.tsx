@@ -9,7 +9,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user' | 'moderator';
+  role: string;
   status: 'active' | 'inactive' | 'pending';
   lastActive: Date;
   avatar: string;
@@ -35,7 +35,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
   const [newUser, setNewUser] = useState({
     username: '',
     email: '',
-    role: 'user' as 'admin' | 'user' | 'moderator'
+    role: 'user'
   });
   const [addUserMessage, setAddUserMessage] = useState('');
   const [lockingUser, setLockingUser] = useState<string | null>(null);
@@ -44,7 +44,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
   const [editUserData, setEditUserData] = useState({
     username: '',
     email: '',
-    role: 'user' as 'admin' | 'user' | 'moderator'
+    role: 'user'
   });
   const [editUserMessage, setEditUserMessage] = useState('');
 
@@ -57,46 +57,22 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
     try {
       setLoading(true);
       const apiUsers = await apiService.getUsers();
-      
-      console.log('Raw API users:', apiUsers); // Debug log
-      
-      // Transform API users to match our interface with temporary role mapping
+      // Transform API users to match our interface using the role string from backend
       const transformedUsers: User[] = apiUsers.map((apiUser) => {
-        let role: 'admin' | 'user' | 'moderator' = 'user';
-        
-        // Temporary role ID mapping until backend endpoints are ready
-        if (apiUser.roles && apiUser.roles.length > 0) {
-          const roleId = apiUser.roles[0];
-          console.log(`User ${apiUser.userName} has role ID:`, roleId);
-          
-          // Map known role IDs to role names
-          if (roleId === '8e8af7ac-69ba-476a-8be0-682efb94555a') {
-            role = 'admin';
-          } else if (roleId === 'moderator-role-id') { // Replace with actual moderator role ID
-            role = 'moderator';
-          } else {
-            role = 'user';
-          }
-        }
-        
         const user = {
           id: apiUser.id,
           name: apiUser.userName,
           email: apiUser.email,
-          role: role,
+          role: apiUser.role,
           status: (apiUser.isLocked || (apiUser.lockoutEnd && new Date(apiUser.lockoutEnd) > new Date()) ? 'inactive' : 'active') as 'active' | 'inactive' | 'pending',
           lastActive: apiUser.lastActive || new Date(),
           avatar: '👤'
         };
-        console.log(`User ${user.name}: isLocked=${apiUser.isLocked}, lockoutEnd=${apiUser.lockoutEnd}, status=${user.status}, role=${user.role}`); // Debug log
         return user;
       });
-      
-      console.log('Transformed users:', transformedUsers); // Debug log
       setUsers(transformedUsers);
     } catch (err) {
       setError('Failed to load users');
-      console.error('Error loading users:', err);
     } finally {
       setLoading(false);
     }
@@ -114,8 +90,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'admin': return '#ef4444';
-      case 'moderator': return '#f59e0b';
-      case 'user': return '#3b82f6';
+      case 'support': return '#3b82f6';
+      case 'consultant': return '#10b981';
       default: return '#64748b';
     }
   };
@@ -337,6 +313,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
+            style={{ color: '#000' }}
           />
         </div>
         
@@ -348,8 +325,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
           >
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
-            <option value="moderator">Moderator</option>
-            <option value="user">User</option>
+            <option value="support">Support</option>
+            <option value="consultant">Consultant</option>
           </select>
           
           <select
@@ -360,7 +337,6 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
-            <option value="pending">Pending</option>
           </select>
           
           <button 
@@ -522,12 +498,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
                 <select
                   id="role"
                   value={newUser.role}
-                  onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value as 'admin' | 'user' | 'moderator' }))}
+                  onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value }))}
                   required
                 >
-                  <option value="user">User</option>
-                  <option value="moderator">Moderator</option>
                   <option value="admin">Admin</option>
+                  <option value="support">Support</option>
+                  <option value="consultant">Consultant</option>
                 </select>
               </div>
               
@@ -605,12 +581,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
                 <select
                   id="edit-role"
                   value={editUserData.role}
-                  onChange={(e) => setEditUserData(prev => ({ ...prev, role: e.target.value as 'admin' | 'user' | 'moderator' }))}
+                  onChange={(e) => setEditUserData(prev => ({ ...prev, role: e.target.value }))}
                   required
                 >
-                  <option value="user">User</option>
-                  <option value="moderator">Moderator</option>
                   <option value="admin">Admin</option>
+                  <option value="support">Support</option>
+                  <option value="consultant">Consultant</option>
                 </select>
               </div>
               

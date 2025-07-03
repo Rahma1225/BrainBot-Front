@@ -3,6 +3,7 @@ import type { FormEvent, ChangeEvent, KeyboardEvent } from 'react';
 import { MessageCircle, Send, Bot, Clock, User } from 'lucide-react';
 import './Chatbot.css';
 import timsoftLogo from '../assets/timsoft.png';
+import { apiService } from '../services/api';
 
 interface Message {
   id: number;
@@ -62,6 +63,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
     }
   ]);
 
+  // Determine assistant name based on role
+  let assistantName = 'BrainBot Assistant';
+  if (currentUser.role === 'support') assistantName = 'BrainBot PMI Assistant';
+  else if (currentUser.role === 'consultant') assistantName = 'BrainBot FLEX Assistant';
+
   const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
@@ -77,17 +83,26 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await apiService.askChat(inputMessage);
       const botResponse: Message = {
         id: messages.length + 2,
-        text: `I understand you said: "${inputMessage}". This is a demo response. In a real application, this would be processed by an AI model.`,
+        text: response.answer,
         isBot: true,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      const botResponse: Message = {
+        id: messages.length + 2,
+        text: 'Sorry, there was an error getting a response from the server.',
+        isBot: true,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -144,7 +159,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
             <img src={timsoftLogo} alt="Timsoft Logo" style={{ width: '32px', height: '32px', marginRight: '8px', verticalAlign: 'middle' }} />
             <Bot size={24} className="chat-icon" />
             <div className="chat-info">
-              <h2>BrainBot Assistant</h2>
+              <h2>{assistantName}</h2>
               <span className="chat-status">Online</span>
             </div>
           </div>

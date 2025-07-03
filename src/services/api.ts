@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5156/api'; // Updated to match .NET backend port
+const API_BASE_URL = 'http://localhost:5156'; // Updated to match .NET backend port
+const API_USER_BASE_URL = 'http://localhost:5156/api';
 
 // Token management
 const TOKEN_KEY = 'auth_token';
@@ -41,7 +42,7 @@ export interface User {
   id: string;
   userName: string;
   email: string;
-  roles: string[];
+  role: string;
   isLocked?: boolean;
   lockoutEnd?: Date | null;
   lastActive?: Date;
@@ -81,6 +82,12 @@ export interface ForgotPasswordDto {
   Email: string;
 }
 
+export interface ResetPasswordDto {
+  email: string;
+  token: string;
+  newPassword: string;
+}
+
 export interface ApiResponse<T> {
   succeeded: boolean;
   errors?: string[];
@@ -96,9 +103,10 @@ export interface Role {
 class ApiService {
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    baseUrlOverride?: string
   ): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${baseUrlOverride || API_BASE_URL}${endpoint}`;
     
     // Get stored token
     const token = getStoredToken();
@@ -116,33 +124,9 @@ class ApiService {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        // Handle 401 Unauthorized - token expired or invalid
-        if (response.status === 401) {
-          clearStoredToken();
-          window.location.href = '/login';
-          throw new Error('Session expired. Please login again.');
-        }
-        
-        const errorData = await response.json().catch(() => ({}));
-        
-        // Check for specific error types
-        if (errorData.errors && typeof errorData.errors === 'object') {
-          // Handle validation errors
-          const errorMessages = Object.values(errorData.errors).flat();
-          throw new Error(errorMessages.join(', '));
-        }
-        
-        // Check for specific error messages
-        if (errorData.message) {
-          throw new Error(errorData.message);
-        }
-        
-        // Check for locked account in response text
-        if (errorData.title && errorData.title.toLowerCase().includes('locked')) {
-          throw new Error('Account is locked. Please contact administration for assistance.');
-        }
-        
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorData = await response.json().catch(() => ({}));
+        // Always throw the error data object if present
+        throw errorData && Object.keys(errorData).length > 0 ? errorData : new Error(`HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
@@ -154,52 +138,52 @@ class ApiService {
 
   // User Management
   async getUsers(): Promise<User[]> {
-    return this.request<User[]>('/users');
+    return this.request<User[]>('/users', {}, API_USER_BASE_URL);
   }
 
   async getUserByUsername(username: string): Promise<User> {
-    return this.request<User>(`/users/${username}`);
+    return this.request<User>(`/users/${username}`, {}, API_USER_BASE_URL);
   }
 
   async createUser(userData: CreateUserDto): Promise<{ message: string }> {
     return this.request<{ message: string }>('/users/create', {
       method: 'POST',
       body: JSON.stringify(userData),
-    });
+    }, API_USER_BASE_URL);
   }
 
   async updatePassword(passwordData: PasswordUpdateDto): Promise<{ message: string }> {
     return this.request<{ message: string }>('/users/update-password', {
       method: 'PUT',
       body: JSON.stringify(passwordData),
-    });
+    }, API_USER_BASE_URL);
   }
 
   async lockUser(lockData: LockUserDto): Promise<{ message: string }> {
     return this.request<{ message: string }>('/users/lock', {
       method: 'PUT',
       body: JSON.stringify(lockData),
-    });
+    }, API_USER_BASE_URL);
   }
 
   async editUser(editData: EditUserDto): Promise<{ message: string }> {
     return this.request<{ message: string }>('/users/edit', {
       method: 'PUT',
       body: JSON.stringify(editData),
-    });
+    }, API_USER_BASE_URL);
   }
 
   async deleteUser(userId: string): Promise<{ message: string }> {
     return this.request<{ message: string }>(`/users/${userId}`, {
       method: 'DELETE',
-    });
+    }, API_USER_BASE_URL);
   }
 
   async forgotPassword(emailData: ForgotPasswordDto): Promise<{ message: string }> {
     return this.request<{ message: string }>('/users/forgot-password', {
       method: 'POST',
       body: JSON.stringify(emailData),
-    });
+    }, API_USER_BASE_URL);
   }
 
   // Authentication
@@ -210,47 +194,27 @@ class ApiService {
       id: string;
       userName: string;
       email: string;
-      roles: string[];
+      role: string;
     };
   }> {
-    try {
-      const response = await this.request<{
-        message: string;
-        token: string;
-        currentUser: {
-          id: string;
-          userName: string;
-          email: string;
-          roles: string[];
-        };
-      }>('/users/login', {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-      });
-      
-      // Store token if received
-      if (response.token) {
-        setStoredToken(response.token);
-      }
-      
-      return response;
-    } catch (error: any) {
-      console.error('Login error:', error);
-      // Handle specific error cases
-      if (error.message && error.message.includes('400')) {
-        // Check if it's a locked account error
-        if (error.message.toLowerCase().includes('locked') || 
-            error.message.toLowerCase().includes('account is locked')) {
-          throw new Error('Account is locked. Please contact administration for assistance.');
-        }
-        // Check if it's invalid credentials
-        if (error.message.toLowerCase().includes('invalid') || 
-            error.message.toLowerCase().includes('credentials')) {
-          throw new Error('Invalid username or password. Please check your credentials.');
-        }
-      }
-      throw error;
+    const response = await this.request<{
+      message: string;
+      token: string;
+      currentUser: {
+        id: string;
+        userName: string;
+        email: string;
+        role: string;
+      };
+    }>('/users/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    }, API_USER_BASE_URL);
+    // Store token if received
+    if (response.token) {
+      setStoredToken(response.token);
     }
+    return response;
   }
 
   // Token management methods
@@ -311,6 +275,58 @@ class ApiService {
       console.error('Failed to get highest role from IDs:', error);
       return 'user';
     }
+  }
+
+  // Chat
+  async askChat(prompt: string): Promise<{ prompt: string; answer: string }> {
+    return this.request<{ prompt: string; answer: string }>(
+      '/chat/ask',
+      {
+        method: 'POST',
+        body: JSON.stringify({ prompt }),
+      },
+      API_BASE_URL
+    );
+  }
+
+  async uploadDocument(file: File): Promise<{ message: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.request<{ message: string }>(
+      '/chat/upload',
+      {
+        method: 'POST',
+        body: formData,
+        headers: {},
+      },
+      API_BASE_URL
+    );
+  }
+
+  async uploadDocumentWithPrompt(file: File, prompt: string): Promise<{ message: string; answer?: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('prompt', prompt);
+    return this.request<{ message: string; answer?: string }>(
+      '/chat/upload',
+      {
+        method: 'POST',
+        body: formData,
+        headers: {},
+      },
+      API_BASE_URL
+    );
+  }
+
+  async resetPassword(data: ResetPasswordDto): Promise<{ message: string }> {
+    return this.request<{ message: string }>(
+      '/users/reset-password',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+      API_USER_BASE_URL
+    );
   }
 }
 
