@@ -347,8 +347,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
             <div className="chat-header-content">
               <img src={timsoftLogo} alt="Timsoft Logo" style={{ width: '32px', height: '32px', marginRight: '8px', verticalAlign: 'middle' }} />
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg>
-              <div className="chat-info">
-                <h2>{assistantName}</h2>
+              <div className="chat-info" style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+                <h2 style={{ margin: 0 }}>{assistantName}</h2>
                 <span className="chat-status">Online</span>
               </div>
             </div>
