@@ -60,14 +60,12 @@ const Settings: React.FC<SettingsProps> = ({ currentUser }) => {
 
   return (
     <div className="settings-container">
+      <button className="upload-back-btn-fixed" onClick={handleBackToChatbot} title="Back to Chatbot">
+        <ArrowLeft size={20} />
+      </button>
       <div className="settings-header">
         <div className="header-content">
           <div className="header-title">
-            <button className="back-btn" onClick={handleBackToChatbot} title="Back to Chatbot">
-              <ArrowLeft size={20} />
-              <span className="back-text">Back to Chatbot</span>
-            </button>
-            <Lock size={24} className="header-icon" />
             <h1>Settings</h1>
           </div>
         </div>

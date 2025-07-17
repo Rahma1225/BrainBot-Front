@@ -402,3 +402,22 @@
     font-size: 1rem;
   }
 } 
+
+.navbar button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+} 
+
+.navbar button:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+} 
+
+.navbar .dropdown-item:focus,
+.navbar .dropdown-item:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+} 

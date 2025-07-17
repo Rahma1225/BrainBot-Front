@@ -958,6 +958,27 @@
   margin-right: 18px;
 }
 
+.user-management-container button:focus,
+.user-management-container button:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+}
+
+.user-management-container .dropdown-item:focus,
+.user-management-container .dropdown-item:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+}
+
+.user-management-container .modal-cancel-btn:focus,
+.user-management-container .modal-cancel-btn:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+}
+
 @media (max-width: 700px) {
   .password-change-modern-card {
     max-width: 100%;

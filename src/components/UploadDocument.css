@@ -334,6 +334,16 @@
   width: 60px;
   text-align: center;
 }
+.upload-page-modern-wrapper button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+}
+.upload-page-modern-wrapper button:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: initial !important;
+}
 @media (max-width: 1100px) {
   .upload-page-modern-wrapper .upload-page-main {
     flex-direction: column;
