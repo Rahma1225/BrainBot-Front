@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MessageCircle, LogOut, Bot, Users, ChevronDown, Lock } from 'lucide-react';
+import { MessageCircle, LogOut, Bot, Users, ChevronDown, Lock, FileUp } from 'lucide-react';
 import './Navbar.css';
 
 interface NavbarProps {
@@ -113,6 +113,18 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, currentUser }) => {
                 
                 <div className="dropdown-divider" aria-hidden="true"></div>
                 
+                {currentUser.role === 'admin' && (
+                  <Link 
+                    to="/upload" 
+                    className="dropdown-item"
+                    onClick={handleMenuItemClick}
+                    role="menuitem"
+                    tabIndex={0}
+                  >
+                    <FileUp size={16} aria-hidden="true" />
+                    <span>Upload Files</span>
+                  </Link>
+                )}
                 {currentUser.role === 'admin' && (
                   <Link 
                     to="/user-management" 

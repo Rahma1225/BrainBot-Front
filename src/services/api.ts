@@ -1,5 +1,5 @@
-const API_BASE_URL = 'http://localhost:5156'; // Updated to match .NET backend port
-const API_USER_BASE_URL = 'http://localhost:5156/api';
+const API_BASE_URL = 'http://localhost:8000'; // FastAPI backend for chat
+const API_USER_BASE_URL = 'http://localhost:5156/api'; // .NET backend for user management
 
 // Token management
 const TOKEN_KEY = 'auth_token';
@@ -120,7 +120,7 @@ class ApiService {
       ...options,
     };
 
-    try {
+    try { 
       const response = await fetch(url, config);
       
       if (!response.ok) {
@@ -277,18 +277,38 @@ class ApiService {
     }
   }
 
-  // Chat
-  async askChat(prompt: string): Promise<{ prompt: string; answer: string }> {
-    return this.request<{ prompt: string; answer: string }>(
-      '/chat/ask',
-      {
-        method: 'POST',
-        body: JSON.stringify({ prompt }),
+  //Chat
+  async askChat(prompt: string): Promise<string> {
+    const url = `${API_USER_BASE_URL}/users/ask`; // ✅ Corrected endpoint
+    const token = getStoredToken();
+  
+    const config: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
-      API_BASE_URL
-    );
+      body: JSON.stringify({ prompt }),
+    };
+  
+    try {
+      const response = await fetch(url, config);
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw errorData && Object.keys(errorData).length > 0 ? errorData : new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json(); // expects { response: string }
+      return result.response;
+    } catch (error) {
+      console.error('Chat API request failed:', error);
+      throw error;
+    }
   }
-
+  
+  
+  //upload document
   async uploadDocument(file: File): Promise<{ message: string }> {
     const formData = new FormData();
     formData.append('file', file);
@@ -325,6 +345,50 @@ class ApiService {
         method: 'POST',
         body: JSON.stringify(data),
       },
+      API_USER_BASE_URL
+    );
+  }
+
+  // Fetch conversation history for the current user
+  async getConversations(): Promise<Array<{ prompt: string; response: string; timestamp: string }>> {
+    return this.request<Array<{ prompt: string; response: string; timestamp: string }>>(
+      '/users/conversations',
+      {},
+      API_USER_BASE_URL
+    );
+  }
+
+  // Conversation API
+  async getConversationsList(): Promise<Array<{ id: string; title: string; createdAt: string }>> {
+    return this.request<Array<{ id: string; title: string; createdAt: string }>>(
+      '/users/conversations', {}, API_USER_BASE_URL
+    );
+  }
+  async createConversation(): Promise<{ id: string; title: string; createdAt: string }> {
+    return this.request<{ id: string; title: string; createdAt: string }>(
+      '/users/conversations', { method: 'POST' }, API_USER_BASE_URL
+    );
+  }
+  async getConversationMessages(conversationId: string): Promise<Array<{ prompt: string; response: string; timestamp: string }>> {
+    return this.request<Array<{ prompt: string; response: string; timestamp: string }>>(
+      `/users/conversations/${conversationId}/messages`, {}, API_USER_BASE_URL
+    );
+  }
+  async addMessageToConversation(conversationId: string, prompt: string): Promise<{ prompt: string; response: string; timestamp: string }> {
+    return this.request<{ prompt: string; response: string; timestamp: string }>(
+      `/users/conversations/${conversationId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ prompt })
+        // Do NOT set headers here! The request method will handle it.
+      },
+      API_USER_BASE_URL
+    );
+  }
+
+  async deleteConversation(conversationId: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>(
+      `/users/conversations/${conversationId}`,
+      { method: 'DELETE' },
       API_USER_BASE_URL
     );
   }

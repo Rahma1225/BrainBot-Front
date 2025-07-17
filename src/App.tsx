@@ -10,6 +10,7 @@ import { apiService } from './services/api';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import './App.css';
+import UploadDocument from './components/UploadDocument';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -174,6 +175,20 @@ function App() {
               <ProtectedRoute>
                 <Layout onLogout={handleLogout} currentUser={currentUser}>
                   <Settings currentUser={currentUser} />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/upload"
+            element={
+              <ProtectedRoute>
+                <Layout onLogout={handleLogout} currentUser={currentUser}>
+                  {currentUser.role === 'admin' ? (
+                    <UploadDocument />
+                  ) : (
+                    <Navigate to="/chatbot" replace />
+                  )}
                 </Layout>
               </ProtectedRoute>
             }

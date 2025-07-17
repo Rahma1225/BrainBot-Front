@@ -20,6 +20,9 @@ interface UserManagementProps {
 }
 
 const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
+  React.useEffect(() => {
+    console.log('UserManagement mounted');
+  }, []);
   const navigate = useNavigate();
   
   const [users, setUsers] = useState<User[]>([]);
@@ -291,14 +294,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
 
   return (
     <div className="user-management-container">
+      <button className="upload-back-btn-fixed" onClick={handleBackToChatbot} title="Back to Chatbot">
+        <ArrowLeft size={20} />
+      </button>
       <div className="user-management-header">
         <div className="header-content">
           <div className="header-title">
-            <button className="back-btn" onClick={handleBackToChatbot} title="Back to Chatbot">
-              <ArrowLeft size={20} />
-              <span className="back-text">Back to Chatbot</span>
-            </button>
-            <Users size={24} className="header-icon" />
             <h1>User Management</h1>
           </div>
         </div>
