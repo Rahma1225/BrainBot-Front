@@ -1,18 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileUp, CheckCircle, XCircle, X, FileText, FileImage, FileSpreadsheet } from 'lucide-react';
 import './UploadDocument.css';
+import { apiService } from '../services/api';
 
 interface DocumentItem {
-  id: string;
-  name: string;
+  fileName: string;
+  uploadedAt: string;
 }
 
-const mockDocuments: DocumentItem[] = [
-  { id: '1', name: 'ProjectPlan.pdf' },
-  { id: '2', name: 'Invoice_March.xlsx' },
-  { id: '3', name: 'Photo.png' },
-];
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
 
 function getFileIcon(ext: string) {
   switch (ext) {
@@ -41,9 +39,22 @@ const UploadDocument: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const [documents, setDocuments] = useState<DocumentItem[]>(mockDocuments);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    try {
+      const docs = await apiService.getUserDocuments();
+      setDocuments(docs);
+    } catch (err) {
+      console.error('Failed to fetch documents', err);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -67,21 +78,29 @@ const UploadDocument: React.FC = () => {
     setLoading(true);
     setMessage('');
     try {
-      // @ts-ignore
-      const { apiService } = await import('../services/api');
       const response = await apiService.uploadDocument(file);
       setMessage(response.message || 'Fichier téléchargé avec succès !');
       setFile(null);
+      fileInputRef.current!.value = '';
+      fetchDocuments();
     } catch (error: any) {
-      setMessage(error?.message || 'Erreur lors de l\'upload.');
+      setMessage(error?.message || "Erreur lors de l'upload.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveDocument = (id: string) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== id));
+  
+  const handleRemoveDocument = async (fileName: string) => {
+    try {
+      await apiService.deleteDocument(fileName);
+      fetchDocuments();
+    } catch (err) {
+      console.error('Failed to delete document', err);
+    }
   };
+  
+  
 
   const handleRemoveSelectedFile = () => {
     setFile(null);
@@ -166,14 +185,14 @@ const UploadDocument: React.FC = () => {
               </thead>
               <tbody>
                 {documents.map(doc => {
-                  const ext = getFileExt(doc.name);
+                  const ext = getFileExt(doc.fileName);
                   return (
-                    <tr key={doc.id}>
+                    <tr key={doc.fileName}>
                       <td>{getFileIcon(ext)}</td>
-                      <td className="document-list-name">{doc.name}</td>
+                      <td className="document-list-name">{doc.fileName}</td>
                       <td><span className="document-list-ext">{ext}</span></td>
                       <td className="document-list-remove-td">
-                        <button className="document-list-remove" onClick={() => handleRemoveDocument(doc.id)} title="Remove document">
+                        <button className="document-list-remove" onClick={() => handleRemoveDocument(doc.fileName)} title="Remove document">
                           <X size={18} />
                         </button>
                       </td>
@@ -189,4 +208,4 @@ const UploadDocument: React.FC = () => {
   );
 };
 
-export default UploadDocument; 
+export default UploadDocument;

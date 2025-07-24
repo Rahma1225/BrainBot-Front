@@ -308,35 +308,105 @@ class ApiService {
   }
   
   
-  //upload document
   async uploadDocument(file: File): Promise<{ message: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.request<{ message: string }>(
-      '/chat/upload',
-      {
-        method: 'POST',
-        body: formData,
-        headers: {},
+  
+    const token = getStoredToken();
+  
+    const config: RequestInit = {
+      method: 'POST',
+      body: formData,
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }), // ✅ Token only
       },
-      API_BASE_URL
-    );
+    };
+  
+    const url = `${API_USER_BASE_URL}/users/upload-document`;
+  
+    try {
+      const response = await fetch(url, config);
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw errorData && Object.keys(errorData).length > 0 ? errorData : new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      return await response.json(); // expects { message: string }
+    } catch (error) {
+      console.error('Upload API request failed:', error);
+      throw error;
+    }
   }
+  
+  
+  
+  async deleteDocument(fileName: string): Promise<{ message: string }> {
+    const token = getStoredToken();
+  
+    const config: RequestInit = {
+      method: 'DELETE',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    };
+  
+    const encodedFilename = encodeURIComponent(fileName);
+    const url = `${API_USER_BASE_URL}/users/documents/${encodedFilename}`;
+  
+    try {
+      const response = await fetch(url, config);
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw errorData && Object.keys(errorData).length > 0
+          ? errorData
+          : new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      return await response.json(); // expects { message: string }
+    } catch (error) {
+      console.error('Delete API request failed:', error);
+      throw error;
+    }
+  }
+  
 
-  async uploadDocumentWithPrompt(file: File, prompt: string): Promise<{ message: string; answer?: string }> {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('prompt', prompt);
-    return this.request<{ message: string; answer?: string }>(
-      '/chat/upload',
+
+
+  async getUserDocuments(): Promise<Array<{ fileName: string; uploadedAt: string }>> {
+    const token = getStoredToken();
+  
+    return this.request<Array<{ fileName: string; uploadedAt: string }>>(
+      '/users/my-documents',
       {
-        method: 'POST',
-        body: formData,
-        headers: {},
+        method: 'GET',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }), // ✅ Add token here
+        },
       },
-      API_BASE_URL
+      API_USER_BASE_URL
     );
   }
+  
+  
+  
+
+
+  // async uploadDocumentWithPrompt(file: File, prompt: string): Promise<{ message: string; answer?: string }> {
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('prompt', prompt);
+  //   return this.request<{ message: string; answer?: string }>(
+  //     '/chat/upload',
+  //     {
+  //       method: 'POST',
+  //       body: formData,
+  //       headers: {},
+  //     },
+  //     API_BASE_URL
+  //   );
+  // }
 
   async resetPassword(data: ResetPasswordDto): Promise<{ message: string }> {
     return this.request<{ message: string }>(
