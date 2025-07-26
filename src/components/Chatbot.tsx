@@ -56,6 +56,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
   const [animatedTitle, setAnimatedTitle] = useState<string>("");
   const [isAnimatingTitle, setIsAnimatingTitle] = useState(false);
   const [sendingFirstMessage, setSendingFirstMessage] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   // Fetch conversations for sidebar
   const fetchConversationsList = async () => {
@@ -100,25 +101,47 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
     }
   }, [selectedConversationId, sendingFirstMessage]);
 
-  // Scroll to top on initial load of messages
-  useEffect(() => {
-    if (messagesContainerRef.current && messages.length > 0) {
-      messagesContainerRef.current.scrollTop = 0;
-    }
-  }, [messages.length === 1 && messages[0].id === 0]);
-
-  // Scroll to bottom only when a new message is sent/received (not on initial load)
+  // Scroll to bottom when messages change
   const scrollToBottom = () => {
     if (messagesEndRef.current && messagesContainerRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   };
+
+  // Scroll to bottom when new messages are added or when typing
   useEffect(() => {
-    // Only scroll to bottom if a new message is added and it's not the initial welcome message
-    if (messages.length > 1 && (isTyping || pendingBotMessage)) {
-      scrollToBottom();
+    if (messages.length > 0 && (isTyping || pendingBotMessage)) {
+      setTimeout(() => scrollToBottom(), 50);
     }
   }, [messages, isTyping, pendingBotMessage]);
+
+  // Scroll to bottom when conversation changes (to show latest messages)
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => scrollToBottom(), 200);
+    }
+  }, [selectedConversationId]);
+
+  // Scroll to bottom when messages are loaded
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => scrollToBottom(), 100);
+    }
+  }, [messages]);
+
+  // Force scroll to bottom on component mount
+  useEffect(() => {
+    setTimeout(() => scrollToBottom(), 500);
+  }, []);
+
+  // Handle scroll events to show/hide scroll button
+  const handleScroll = () => {
+    if (messagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    }
+  };
 
   // New Chat button handler
   const handleNewChat = async () => {
@@ -353,7 +376,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
               </div>
             </div>
           </div>
-          <div className="chat-messages" ref={messagesContainerRef}>
+          <div className="chat-messages" ref={messagesContainerRef} onScroll={handleScroll}>
             {messages.length > 0 && messages.map((message, idx) => {
               // Display timestamp above each user-bot pair (i.e., before user message)
               const isUser = !message.isBot;
@@ -405,6 +428,32 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
               </div>
             )}
             <div ref={messagesEndRef} />
+            <button 
+              className="scroll-to-bottom-btn"
+              onClick={scrollToBottom}
+              title="Scroll to bottom"
+              style={{
+                position: 'absolute',
+                bottom: '100px',
+                right: '20px',
+                width: '50px',
+                height: '50px',
+                background: '#2563eb',
+                color: 'white',
+                border: '3px solid #ffffff',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
+                zIndex: 100
+              }}
+            >
+              ↓
+            </button>
           </div>
           <div className="chat-input">
             <form onSubmit={handleSendMessage} className="input-form">
@@ -412,18 +461,81 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
                 value={inputMessage}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message here..."
+                placeholder="💬 CLICK HERE TO TYPE YOUR MESSAGE - Press Enter to send..."
                 className="message-input"
                 rows={1}
+                style={{ backgroundColor: '#ffffff' }}
               />
               <button type="submit" className="send-btn" disabled={!inputMessage.trim()}>
-                <span style={{ width: '100%', height: '100%', textAlign: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle', fontSize: '1.7rem', lineHeight: 1 }}>
+                <span style={{ width: '100%', height: '100%', textAlign: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'middle', fontSize: '1.7rem', lineHeight: 1, color: 'white' }}>
                   →
                 </span>
               </button>
             </form>
           </div>
         </div>
+      </div>
+      {/* Fallback input area - always visible */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: '260px',
+        right: 0,
+        background: '#f7fafd',
+        padding: '1rem 1.5rem',
+        borderTop: '1px solid #e5e7eb',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        minHeight: '80px'
+      }}>
+        <form onSubmit={handleSendMessage} style={{
+          display: 'flex',
+          gap: '0.7rem',
+          alignItems: 'center',
+          width: '100%',
+          background: '#ffffff',
+          borderRadius: '8px',
+          padding: '0.5rem'
+        }}>
+          <textarea
+            value={inputMessage}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="💬 CLICK HERE TO TYPE YOUR MESSAGE - Press Enter to send..."
+            style={{
+              flex: 1,
+              padding: '0.7rem 1rem',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              background: 'white',
+              color: '#1e293b',
+              fontWeight: 500,
+              resize: 'none',
+              minHeight: '36px',
+              maxHeight: '90px',
+              width: '100%',
+              outline: 'none'
+            }}
+            rows={1}
+          />
+          <button type="submit" disabled={!inputMessage.trim()} style={{
+            width: '38px',
+            height: '38px',
+            background: '#2563eb',
+            border: 'none',
+            borderRadius: '8px',
+            color: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.1rem'
+          }}>
+            <span style={{ fontSize: '1.7rem', lineHeight: 1 }}>→</span>
+          </button>
+        </form>
       </div>
     </div>
   );
