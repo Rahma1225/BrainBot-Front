@@ -73,11 +73,7 @@ html, body, #root {
   margin-bottom: 1rem;
 }
 
-.new-chat-btn:hover {
-  background: #1d4ed8;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
-  transform: translateY(-1px) scale(1.01);
-}
+
 
 .conversations-list {
   flex: 1;
@@ -111,10 +107,7 @@ html, body, #root {
   transform: scale(1.01);
 }
 
-.conversation-item:hover {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-}
+
 
 .conversation-title {
   color: #1e293b;
@@ -142,9 +135,7 @@ html, body, #root {
   z-index: 1;
 }
 
-.conversation-item:hover .delete-conv-btn {
-  opacity: 1;
-}
+
 
 .chatbot-main {
   flex: 1;
@@ -403,10 +394,7 @@ html, body, #root {
   outline: none;
 }
 
-.message-input:focus {
-  outline: none;
-  border-color: #2563eb;
-}
+
 
 .message-input::placeholder {
   color: #94a3b8;
@@ -432,10 +420,7 @@ html, body, #root {
   min-height: 38px;
 }
 
-.send-btn:hover:not(:disabled) {
-  background: #1d4ed8;
-  transform: translateY(-1px) scale(1.04);
-}
+
 
 .send-btn:disabled {
   opacity: 0.5;
@@ -465,11 +450,7 @@ html, body, #root {
   border: 3px solid #ffffff;
 }
 
-.scroll-to-bottom-btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37,99,235,0.4);
-}
+
 
 /* Scrollbar styling */
 .conversations-list::-webkit-scrollbar,
@@ -491,11 +472,7 @@ html, body, #root {
   border-radius: 3px;
 }
 
-.conversations-list::-webkit-scrollbar-thumb:hover,
-.chat-messages::-webkit-scrollbar-thumb:hover,
-.message-input::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
+
 
 .chat-notification {
   position: fixed;
@@ -610,39 +587,4 @@ html, body, #root {
   }
 }
 
-/* Remove focus/hover outlines, borders, and box-shadows from all buttons and interactive elements */
-.new-chat-btn:focus, .new-chat-btn:hover,
-.delete-conv-btn:focus, .delete-conv-btn:hover,
-.send-btn:focus, .send-btn:hover,
-input:focus, input:hover,
-textarea:focus, textarea:hover,
-button:focus, button:hover {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  background: inherit;
-}
 
-/* Remove focus/hover for conversation items */
-.conversation-item:focus, .conversation-item:hover {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  background: #f1f5f9;
-}
-
-/* Remove focus/hover for .send-btn specifically */
-.send-btn:focus, .send-btn:hover {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  background: #2563eb;
-}
-
-/* Remove focus/hover for .delete-conv-btn specifically */
-.delete-conv-btn:focus, .delete-conv-btn:hover {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  background: none;
-}

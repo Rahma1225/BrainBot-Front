@@ -57,28 +57,16 @@
   transition: left 0.5s ease;
 }
 
-.back-btn:hover::before {
-  left: 100%;
-}
 
-.back-btn:hover {
-  transform: translateY(-2px) translateX(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
 
-.back-btn:active {
-  transform: translateY(0) translateX(0);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
+
 
 .back-btn svg {
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
 
-.back-btn:hover svg {
-  transform: translateX(-2px);
-}
+
 
 .back-text {
   white-space: nowrap;
@@ -129,10 +117,7 @@
   transition: all 0.3s ease;
 }
 
-.switcher-btn:hover {
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
-}
+
 
 .switcher-btn.active {
   background: white;
@@ -230,10 +215,7 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.change-password-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
+
 
 .add-user-btn {
   background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
@@ -251,10 +233,7 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.add-user-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
+
 
 .filters-section {
   display: flex;
@@ -289,11 +268,7 @@
   color: #000 !important;
 }
 
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+
 
 .filter-controls {
   display: flex;
@@ -312,11 +287,7 @@
   min-width: 120px;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+
 
 /* Responsive design */
 @media (max-width: 768px) {

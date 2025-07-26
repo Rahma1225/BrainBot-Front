@@ -199,9 +199,7 @@
   align-items: center;
   justify-content: center;
 }
-.upload-page-modern-wrapper .selected-file-remove.top-right:hover {
-  background: #fee2e2;
-}
+
 .upload-page-modern-wrapper .selected-file-remove {
   background: none;
   border: none;
@@ -214,9 +212,7 @@
   align-items: center;
   transition: background 0.18s;
 }
-.upload-page-modern-wrapper .selected-file-remove:hover {
-  background: #fee2e2;
-}
+
 .upload-page-modern-wrapper .upload-modern-btn {
   width: 100%;
   background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
@@ -320,9 +316,7 @@
   align-items: center;
   transition: background 0.18s;
 }
-.upload-page-modern-wrapper .document-list-remove:hover {
-  background: #fee2e2;
-}
+
 .upload-page-modern-wrapper .document-list-empty {
   text-align: center;
   color: #64748b;
@@ -334,16 +328,8 @@
   width: 60px;
   text-align: center;
 }
-.upload-page-modern-wrapper button:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: initial !important;
-}
-.upload-page-modern-wrapper button:hover {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: initial !important;
-}
+
+
 @media (max-width: 1100px) {
   .upload-page-modern-wrapper .upload-page-main {
     flex-direction: column;

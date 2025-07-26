@@ -130,13 +130,7 @@
   backdrop-filter: blur(10px);
 }
 
-.form-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 16px rgba(59, 130, 246, 0.15);
-  background: linear-gradient(145deg, #ffffff, #eff6ff);
-  transform: translateY(-1px);
-}
+
 
 .form-input::placeholder {
   color: #94a3b8;
@@ -144,10 +138,7 @@
   opacity: 0.8;
 }
 
-.form-input:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.08);
-}
+
 
 /* Password field container */
 .password-field-container {
@@ -175,16 +166,9 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
-.password-toggle-btn:hover {
-  background: rgba(59, 130, 246, 0.2);
-  color: #1d4ed8;
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-}
 
-.password-toggle-btn:active {
-  transform: translateY(-50%) scale(0.95);
-}
+
+
 
 .password-toggle-btn:disabled {
   opacity: 0.5;
@@ -256,14 +240,9 @@
   left: 100%;
 }
 
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-}
 
-.login-btn:active {
-  transform: translateY(0);
-}
+
+
 
 .login-btn:disabled {
   opacity: 0.7;
@@ -287,10 +266,7 @@
   border-radius: 6px;
 }
 
-.forgot-password a:hover {
-  color: #1d4ed8;
-  background: rgba(59, 130, 246, 0.1);
-}
+
 
 /* Internal Access Notice */
 .internal-notice {
@@ -315,11 +291,7 @@
 }
 
 /* Enhanced focus states */
-.form-input:focus,
-.login-btn:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 2px;
-}
+
 
 /* Loading animation for button */
 .login-btn:disabled::after {
@@ -401,10 +373,7 @@
     color: #374151;
   }
   
-  .form-input:focus {
-    background: white;
-    border-color: #3b82f6;
-  }
+  
   
   .form-input::placeholder {
     color: #9ca3af;
@@ -431,11 +400,7 @@
   left: 0;
 }
 
-.back-to-landing-btn:hover {
-  background: rgba(59, 130, 246, 0.15);
-  color: #1d4ed8;
-  transform: translateX(-2px);
-}
+
 
 .forgot-password-link {
   background: none;
@@ -451,19 +416,8 @@
   display: inline-block;
 }
 
-.forgot-password-link:hover {
-  color: #1d4ed8;
-  text-shadow: 0 2px 8px rgba(59,130,246,0.08);
-} 
+ 
 
-.login-container button:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: initial !important;
-} 
+ 
 
-.login-container button:hover {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: initial !important;
-} 
+ 

@@ -62,28 +62,16 @@
   transition: left 0.5s ease;
 }
 
-.back-btn:hover::before {
-  left: 100%;
-}
 
-.back-btn:hover {
-  transform: translateY(-2px) translateX(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
 
-.back-btn:active {
-  transform: translateY(0) translateX(0);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
+
 
 .back-btn svg {
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
 
-.back-btn:hover svg {
-  transform: translateX(-2px);
-}
+
 
 .back-text {
   white-space: nowrap;
@@ -177,11 +165,7 @@
   box-sizing: border-box;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+
 
 .form-group input::placeholder {
   color: #94a3b8;
@@ -227,10 +211,7 @@
   margin-top: 0.5rem;
 }
 
-.change-password-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
+
 
 .upload-back-btn-fixed {
   position: absolute;
@@ -253,12 +234,7 @@
   margin-right: 18px;
 }
 
-.settings-container button:focus,
-.settings-container button:hover {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: initial !important;
-}
+
 
 /* Responsive design */
 @media (max-width: 768px) {

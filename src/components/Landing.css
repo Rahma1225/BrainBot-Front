@@ -67,9 +67,7 @@
   transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-  color: #3b82f6;
-}
+
 
 .nav-login-btn {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -82,10 +80,7 @@
   transition: all 0.3s ease;
 }
 
-.nav-login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
-}
+
 
 .mobile-menu-btn {
   display: none;
@@ -178,10 +173,7 @@
   box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
 }
 
-.primary-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(96, 165, 250, 0.4);
-}
+
 
 .primary-btn.large {
   padding: 1.25rem 2.5rem;
@@ -201,10 +193,7 @@
   backdrop-filter: blur(10px);
 }
 
-.secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-}
+
 
 /* Chat Demo */
 .hero-visual {
@@ -333,10 +322,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
+
 
 .feature-icon-container {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -394,10 +380,7 @@
   transition: all 0.3s ease;
 }
 
-.testimonial-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-}
+
 
 .testimonial-content p {
   font-size: 1rem;
@@ -515,9 +498,7 @@
   transition: color 0.3s ease;
 }
 
-.footer-section a:hover {
-  color: #3b82f6;
-}
+
 
 .footer-logo {
   display: flex;

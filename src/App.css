@@ -32,11 +32,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Modern focus styles */
-*:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 2px;
-}
+
 
 /* Modern selection */
 ::selection {
@@ -102,12 +98,7 @@ html {
   will-change: filter;
   transition: filter 300ms;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
+
 
 @keyframes logo-spin {
   from {
@@ -146,9 +137,7 @@ html {
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
+
 
 .loading-container {
   display: flex;
