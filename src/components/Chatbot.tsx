@@ -105,15 +105,21 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
   const scrollToBottom = () => {
     if (messagesEndRef.current && messagesContainerRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      // Also scroll the container directly as backup
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   };
 
-  // Scroll to bottom when new messages are added or when typing
+  // Scroll to bottom when new messages are added
   useEffect(() => {
-    if (messages.length > 0 && (isTyping || pendingBotMessage)) {
+    if (messages.length > 0) {
+      // Immediate scroll
+      scrollToBottom();
+      // Delayed scroll to ensure it works even if DOM is still updating
       setTimeout(() => scrollToBottom(), 50);
+      setTimeout(() => scrollToBottom(), 150);
     }
-  }, [messages, isTyping, pendingBotMessage]);
+  }, [messages]);
 
   // Scroll to bottom when conversation changes (to show latest messages)
   useEffect(() => {
@@ -121,6 +127,20 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
       setTimeout(() => scrollToBottom(), 200);
     }
   }, [selectedConversationId]);
+
+  // Scroll to bottom when bot is typing
+  useEffect(() => {
+    if (isTyping || pendingBotMessage) {
+      setTimeout(() => scrollToBottom(), 50);
+    }
+  }, [isTyping, pendingBotMessage]);
+
+  // Scroll to bottom when user starts typing (to show input area)
+  useEffect(() => {
+    if (inputMessage.trim()) {
+      setTimeout(() => scrollToBottom(), 100);
+    }
+  }, [inputMessage]);
 
   // Scroll to bottom when messages are loaded
   useEffect(() => {
