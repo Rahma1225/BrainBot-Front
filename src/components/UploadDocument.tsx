@@ -40,6 +40,8 @@ const UploadDocument: React.FC = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -92,12 +94,25 @@ const UploadDocument: React.FC = () => {
 
   
   const handleRemoveDocument = async (fileName: string) => {
+    setShowDeleteConfirm(fileName);
+  };
+
+  const confirmDeleteDocument = async (fileName: string) => {
+    setDeleteLoading(fileName);
+    setShowDeleteConfirm(null);
     try {
       await apiService.deleteDocument(fileName);
-      fetchDocuments();
+      await fetchDocuments();
     } catch (err) {
       console.error('Failed to delete document', err);
+      setMessage('Failed to delete document. Please try again.');
+    } finally {
+      setDeleteLoading(null);
     }
+  };
+
+  const cancelDeleteDocument = () => {
+    setShowDeleteConfirm(null);
   };
   
   
@@ -192,8 +207,17 @@ const UploadDocument: React.FC = () => {
                       <td className="document-list-name">{doc.fileName}</td>
                       <td><span className="document-list-ext">{ext}</span></td>
                       <td className="document-list-remove-td">
-                        <button className="document-list-remove" onClick={() => handleRemoveDocument(doc.fileName)} title="Remove document">
-                          <X size={18} />
+                        <button 
+                          className="document-list-remove" 
+                          onClick={() => handleRemoveDocument(doc.fileName)} 
+                          title="Remove document"
+                          disabled={deleteLoading === doc.fileName}
+                        >
+                          {deleteLoading === doc.fileName ? (
+                            <div className="loading-spinner-small"></div>
+                          ) : (
+                            <X size={18} />
+                          )}
                         </button>
                       </td>
                     </tr>
@@ -204,6 +228,45 @@ const UploadDocument: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Full Page Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-content">
+            <div className="delete-modal-icon">
+              <XCircle size={48} />
+            </div>
+            <h3 className="delete-modal-title">Delete Document</h3>
+            <p className="delete-modal-message">
+              Are you sure you want to delete "<strong>{showDeleteConfirm}</strong>"? 
+              This action cannot be undone.
+            </p>
+            <div className="delete-modal-buttons">
+              <button 
+                className="delete-modal-cancel-btn" 
+                onClick={cancelDeleteDocument}
+                disabled={deleteLoading === showDeleteConfirm}
+              >
+                Cancel
+              </button>
+              <button 
+                className="delete-modal-confirm-btn" 
+                onClick={() => confirmDeleteDocument(showDeleteConfirm)}
+                disabled={deleteLoading === showDeleteConfirm}
+              >
+                {deleteLoading === showDeleteConfirm ? (
+                  <div className="delete-modal-loading">
+                    <div className="loading-spinner-large"></div>
+                    <span>Deleting...</span>
+                  </div>
+                ) : (
+                  'Delete Document'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

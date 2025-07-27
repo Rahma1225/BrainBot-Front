@@ -448,32 +448,35 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
               </div>
             )}
             <div ref={messagesEndRef} />
-            <button 
-              className="scroll-to-bottom-btn"
-              onClick={scrollToBottom}
-              title="Scroll to bottom"
-              style={{
-                position: 'absolute',
-                bottom: '100px',
-                right: '20px',
-                width: '50px',
-                height: '50px',
-                background: '#2563eb',
-                color: 'white',
-                border: '3px solid #ffffff',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
-                zIndex: 100
-              }}
-            >
-              ↓
-            </button>
+            {showScrollButton && (
+              <button 
+                className="scroll-to-bottom-btn"
+                onClick={scrollToBottom}
+                title="Scroll to bottom"
+                style={{
+                  position: 'absolute',
+                  bottom: '100px',
+                  right: '20px',
+                  width: '50px',
+                  height: '50px',
+                  background: '#2563eb',
+                  color: 'white',
+                  border: '3px solid #ffffff',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
+                  boxShadow: '0 4px 12px rgba(37,99,235,0.4)',
+                  zIndex: 100,
+                  transition: 'opacity 0.3s ease, transform 0.3s ease'
+                }}
+              >
+                ↓
+              </button>
+            )}
           </div>
           <div className="chat-input">
             <form onSubmit={handleSendMessage} className="input-form">
