@@ -170,7 +170,14 @@ const UploadDocument: React.FC = () => {
               </div>
             )}
             <button type="submit" className="upload-modern-btn" disabled={loading || !file}>
-              {loading ? 'Uploading...' : 'Upload'}
+              {loading ? (
+                <div className="upload-loading">
+                  <div className="loading-spinner-upload"></div>
+                  <span>Uploading...</span>
+                </div>
+              ) : (
+                'Upload'
+              )}
             </button>
           </form>
           {message && (
