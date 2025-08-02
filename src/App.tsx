@@ -11,6 +11,7 @@ import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import './App.css';
 import UploadDocument from './components/UploadDocument';
+import Dashboard from './components/Dashboard';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -175,6 +176,20 @@ function App() {
               <ProtectedRoute>
                 <Layout onLogout={handleLogout} currentUser={currentUser}>
                   <Settings currentUser={currentUser} />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Layout onLogout={handleLogout} currentUser={currentUser}>
+                  {currentUser.role === 'admin' ? (
+                    <Dashboard currentUser={currentUser} />
+                  ) : (
+                    <Navigate to="/chatbot" replace />
+                  )}
                 </Layout>
               </ProtectedRoute>
             }

@@ -38,9 +38,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
   const [newUser, setNewUser] = useState({
     username: '',
     email: '',
-    role: 'user'
+    role: 'admin'
   });
   const [addUserMessage, setAddUserMessage] = useState('');
+  const [addUserLoading, setAddUserLoading] = useState(false);
   const [lockingUser, setLockingUser] = useState<string | null>(null);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -50,6 +51,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
     role: 'user'
   });
   const [editUserMessage, setEditUserMessage] = useState('');
+  const [editUserLoading, setEditUserLoading] = useState(false);
 
   // Load users from API
   useEffect(() => {
@@ -142,6 +144,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
     }
     
     try {
+      setAddUserLoading(true);
+      setAddUserMessage('');
+      
       const currentYear = new Date().getFullYear();
       const capitalizedUsername = newUser.username.charAt(0).toUpperCase() + newUser.username.slice(1);
       const userData: CreateUserDto = {
@@ -151,28 +156,34 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
         Role: newUser.role
       };
       
-      console.log('Sending user data:', userData); // Debug log
+
       
       await apiService.createUser(userData);
+      
+      // Keep loading state for 1.5 seconds
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       setAddUserMessage('User added successfully!');
       
       // Reset form
       setNewUser({
         username: '',
         email: '',
-        role: 'user'
+        role: 'admin'
       });
       
       // Reload users
       await loadUsers();
       
-      // Close modal after success
+      // Close modal after showing success message
       setTimeout(() => {
         setIsAddUserModalOpen(false);
         setAddUserMessage('');
-      }, 2000);
+      }, 1000);
     } catch (err: any) {
       setAddUserMessage(err.message || 'Failed to add user');
+    } finally {
+      setAddUserLoading(false);
     }
   };
 
@@ -249,6 +260,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
     }
     
     try {
+      setEditUserLoading(true);
+      setEditUserMessage('');
+      
       const editData: EditUserDto = {
         Id: editingUser.id,
         NewUserName: editUserData.username,
@@ -257,19 +271,25 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
       };
       
       await apiService.editUser(editData);
+      
+      // Keep loading state for 3 seconds
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
       setEditUserMessage('User updated successfully!');
       
       // Reload users
       await loadUsers();
       
-      // Close modal after success
+      // Close modal after showing success message
       setTimeout(() => {
         setIsEditUserModalOpen(false);
         setEditUserMessage('');
         setEditingUser(null);
-      }, 2000);
+      }, 1000);
     } catch (err: any) {
       setEditUserMessage(err.message || 'Failed to update user');
+    } finally {
+      setEditUserLoading(false);
     }
   };
 
@@ -277,7 +297,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
     setNewUser({
       username: '',
       email: '',
-      role: 'user'
+      role: 'admin'
     });
     setAddUserMessage('');
   };
@@ -293,19 +313,22 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className="user-management-container">
-      <button className="upload-back-btn-fixed" onClick={handleBackToChatbot} title="Back to Chatbot">
+    <div className="user-management-page-modern-wrapper">
+      <button className="user-management-back-btn-fixed" onClick={handleBackToChatbot} title="Back to Chatbot">
         <ArrowLeft size={20} />
       </button>
-      <div className="user-management-header">
-        <div className="header-content">
-          <div className="header-title">
-            <h1>User Management</h1>
-          </div>
+      <div className="user-management-page-header">
+        <div className="user-management-page-header-icon">
+          <Users size={36} />
+        </div>
+        <div>
+          <h1 className="user-management-page-header-title">User Management</h1>
+          <div className="user-management-page-header-sub">Manage users, roles, and permissions</div>
         </div>
       </div>
-
-      <div className="filters-section">
+      <div className="user-management-page-main">
+        <div className="user-management-content">
+          <div className="filters-section">
         <div className="search-box">
           <Search size={18} className="search-icon" />
           <input
@@ -451,11 +474,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
           </div>
         )}
       </div>
+    </div>
+    </div>
 
       {/* Add User Modal */}
       {isAddUserModalOpen && (
         <div className="modal-overlay" onClick={() => setIsAddUserModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          {addUserLoading && <div className="loading-spinner"></div>}
+          <div className={`modal-content ${addUserLoading ? 'loading' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Add New User</h2>
               <button 
@@ -525,9 +551,15 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="modal-submit-btn">
-                  <UserPlus size={16} />
-                  Add User
+                <button 
+                  type="submit" 
+                  className="modal-submit-btn"
+                  disabled={addUserLoading}
+                >
+                  <>
+                    <UserPlus size={12} />
+                    Add User
+                  </>
                 </button>
               </div>
             </form>
@@ -538,7 +570,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
       {/* Edit User Modal */}
       {isEditUserModalOpen && editingUser && (
         <div className="modal-overlay" onClick={() => setIsEditUserModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          {editUserLoading && <div className="loading-spinner"></div>}
+          <div className={`modal-content ${editUserLoading ? 'loading' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Edit User</h2>
               <button 
@@ -608,9 +641,15 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="modal-submit-btn">
-                  <Edit size={16} />
-                  Update User
+                <button 
+                  type="submit" 
+                  className="modal-submit-btn"
+                  disabled={editUserLoading}
+                >
+                  <>
+                    <Edit size={12} />
+                    Update
+                  </>
                 </button>
               </div>
             </form>
