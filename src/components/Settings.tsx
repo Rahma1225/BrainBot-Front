@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Lock, Eye, EyeOff, Settings as SettingsIcon } from 'lucide-react';
 import { apiService } from '../services/api';
 import type { PasswordUpdateDto } from '../services/api';
 import './Settings.css';
@@ -65,8 +65,12 @@ const Settings: React.FC<SettingsProps> = ({ currentUser }) => {
       </button>
       <div className="settings-header">
         <div className="header-content">
+          <div className="settings-page-header-icon">
+            <SettingsIcon size={36} />
+          </div>
           <div className="header-title">
             <h1>Settings</h1>
+            <div className="settings-page-header-sub">Manage your account settings</div>
           </div>
         </div>
       </div>
