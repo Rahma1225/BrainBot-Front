@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { FormEvent, ChangeEvent, KeyboardEvent } from 'react';
-import { MessageCircle, Send, Bot, Clock, User, Trash2 } from 'lucide-react';
+import { MessageCircle, Send, Bot, Clock, User, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import './Chatbot.css';
 import timsoftLogo from '../assets/timsoft.png';
@@ -11,6 +11,8 @@ interface Message {
   text: string;
   isBot: boolean;
   timestamp: Date;
+  feedback?: 'like' | 'dislike' | null;
+  messageId?: string; // For API calls
 }
 
 interface Conversation {
@@ -76,13 +78,29 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
   const fetchMessages = async (conversationId: string) => {
     try {
       const history = await apiService.getConversationMessages(conversationId);
+      console.log('Fetched conversation messages:', history); // Debug log
       setMessages(
         history.map((conv, idx) => [
-          { id: idx * 2 + 1, text: conv.prompt, isBot: false, timestamp: new Date(conv.timestamp) },
-          { id: idx * 2 + 2, text: conv.response, isBot: true, timestamp: new Date(conv.timestamp) }
+          { 
+            id: idx * 2 + 1, 
+            text: conv.prompt, 
+            isBot: false, 
+            timestamp: new Date(conv.timestamp),
+            messageId: conv.id || `user-${Date.now()}-${idx}`,
+            feedback: null
+          },
+          { 
+            id: idx * 2 + 2, 
+            text: conv.response, 
+            isBot: true, 
+            timestamp: new Date(conv.timestamp),
+            messageId: conv.id || `bot-${Date.now()}-${idx}`,
+            feedback: conv.feedback || null
+          }
         ]).flat()
       );
     } catch (err) {
+      console.error('Error fetching messages:', err);
       setMessages([]);
     }
   };
@@ -261,12 +279,14 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
           i++;
           setTimeout(typeNext, 18); // Typing speed
         } else {
-          setMessages(prev => [...prev, {
-            id: prev.length + 1,
-            text: fullText,
-            isBot: true,
-            timestamp: new Date(botMsg.timestamp)
-          }]);
+                     setMessages(prev => [...prev, {
+             id: prev.length + 1,
+             text: fullText,
+             isBot: true,
+             timestamp: new Date(botMsg.timestamp),
+             messageId: botMsg.id || `bot-${Date.now()}`,
+             feedback: null
+           }]);
           setPendingBotMessage(null);
           setAnimatingBot(false);
           setIsTyping(false);
@@ -316,6 +336,37 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
       }
     } catch (err) {
       // Optionally show error
+    }
+  };
+
+  // Handle feedback submission
+  const handleFeedback = async (messageId: string, feedback: 'like' | 'dislike') => {
+    try {
+      console.log('Submitting feedback:', { messageId, feedback }); // Debug log
+      
+      // Prevent duplicate submissions
+      const message = messages.find(msg => msg.messageId === messageId);
+      if (message?.feedback === feedback) {
+        setNotification('⚠️ Feedback already submitted for this message.');
+        setTimeout(() => setNotification(null), 2000);
+        return;
+      }
+
+      await apiService.addFeedbackToMessage(messageId, feedback);
+      
+      // Update the message's feedback state locally
+      setMessages(prev => prev.map(msg => 
+        msg.messageId === messageId 
+          ? { ...msg, feedback } 
+          : msg
+      ));
+      
+      setNotification('✅ Feedback submitted successfully!');
+      setTimeout(() => setNotification(null), 2000);
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      setNotification('❌ Failed to submit feedback. Please try again.');
+      setTimeout(() => setNotification(null), 3000);
     }
   };
 
@@ -412,12 +463,32 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
                     <div className="message-avatar">
                       {message.isBot ? <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg> : <span>{getUserInitials(currentUser.name)}</span>}
                     </div>
-                    <div className="message-content">
-                      <div className="message-text">
-                        <ReactMarkdown>{message.text.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\+/g, '\n')}</ReactMarkdown>
-                      </div>
-                      <div className="message-time">{formatTime(message.timestamp)}</div>
-                    </div>
+                                         <div className="message-content">
+                       <div className="message-text">
+                         <ReactMarkdown>{message.text.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\+/g, '\n')}</ReactMarkdown>
+                       </div>
+                       <div className="message-footer">
+                         <div className="message-time">{formatTime(message.timestamp)}</div>
+                         {message.isBot && message.messageId && (
+                           <div className="message-feedback">
+                             <button
+                               className={`feedback-btn ${message.feedback === 'like' ? 'active' : ''}`}
+                               onClick={() => handleFeedback(message.messageId!, 'like')}
+                               title="Like this response"
+                             >
+                               <ThumbsUp size={16} />
+                             </button>
+                             <button
+                               className={`feedback-btn ${message.feedback === 'dislike' ? 'active' : ''}`}
+                               onClick={() => handleFeedback(message.messageId!, 'dislike')}
+                               title="Dislike this response"
+                             >
+                               <ThumbsDown size={16} />
+                             </button>
+                           </div>
+                         )}
+                       </div>
+                     </div>
                   </div>
                 </React.Fragment>
               );

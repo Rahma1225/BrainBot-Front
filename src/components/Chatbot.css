@@ -587,4 +587,57 @@ html, body, #root {
   }
 }
 
+/* Feedback styles */
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+
+.message-feedback {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.feedback-btn {
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.feedback-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.feedback-btn.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.feedback-btn.active:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.message.user .message-footer {
+  justify-content: flex-end;
+}
+
+.message.user .message-feedback {
+  display: none;
+}
+
 

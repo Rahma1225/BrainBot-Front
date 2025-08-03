@@ -390,8 +390,6 @@ class ApiService {
   }
   
   
-  
-
 
   // async uploadDocumentWithPrompt(file: File, prompt: string): Promise<{ message: string; answer?: string }> {
   //   const formData = new FormData();
@@ -439,13 +437,13 @@ class ApiService {
       '/users/conversations', { method: 'POST' }, API_USER_BASE_URL
     );
   }
-  async getConversationMessages(conversationId: string): Promise<Array<{ prompt: string; response: string; timestamp: string }>> {
-    return this.request<Array<{ prompt: string; response: string; timestamp: string }>>(
+  async getConversationMessages(conversationId: string): Promise<Array<{ id: string; prompt: string; response: string; timestamp: string; feedback?: 'like' | 'dislike' | null }>> {
+    return this.request<Array<{ id: string; prompt: string; response: string; timestamp: string; feedback?: 'like' | 'dislike' | null }>>(
       `/users/conversations/${conversationId}/messages`, {}, API_USER_BASE_URL
     );
   }
-  async addMessageToConversation(conversationId: string, prompt: string): Promise<{ prompt: string; response: string; timestamp: string }> {
-    return this.request<{ prompt: string; response: string; timestamp: string }>(
+  async addMessageToConversation(conversationId: string, prompt: string): Promise<{ prompt: string; response: string; timestamp: string; id?: string }> {
+    return this.request<{ prompt: string; response: string; timestamp: string; id?: string }>(
       `/users/conversations/${conversationId}/messages`, {
         method: 'POST',
         body: JSON.stringify({ prompt })
@@ -459,6 +457,18 @@ class ApiService {
     return this.request<{ message: string }>(
       `/users/conversations/${conversationId}`,
       { method: 'DELETE' },
+      API_USER_BASE_URL
+    );
+  }
+
+  // Feedback API
+  async addFeedbackToMessage(messageId: string, feedback: 'like' | 'dislike'): Promise<{ message: string }> {
+    return this.request<{ message: string }>(
+      `/users/messages/${messageId}/feedback`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ feedback }),
+      },
       API_USER_BASE_URL
     );
   }
