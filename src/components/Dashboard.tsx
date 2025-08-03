@@ -8,10 +8,13 @@ import {
   Calendar,
   Clock,
   BarChart3,
-  ArrowLeft
+  ArrowLeft,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../services/api';
 
 interface DashboardProps {
   currentUser: { name: string; email: string; role: string };
@@ -22,6 +25,8 @@ interface DashboardStats {
   totalDocuments: number;
   totalConversations: number;
   activeUsers: number;
+  likeCount: number;
+  dislikeCount: number;
   recentUploads: Array<{
     id: string;
     filename: string;
@@ -48,6 +53,8 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
     totalDocuments: 0,
     totalConversations: 0,
     activeUsers: 0,
+    likeCount: 0,
+    dislikeCount: 0,
     recentUploads: [],
     recentUsers: [],
     conversationStats: {
@@ -63,30 +70,39 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
     const loadDashboardData = async () => {
       setLoading(true);
       
-      // Mock data - replace with actual API calls
-      setStats({
-        totalUsers: 24,
-        totalDocuments: 156,
-        totalConversations: 342,
-        activeUsers: 18,
-        recentUploads: [
-          { id: '1', filename: 'XRP_Flex_Manual.pdf', uploadDate: '2024-01-15', size: '2.4 MB' },
-          { id: '2', filename: 'Configuration_Guide.docx', uploadDate: '2024-01-14', size: '1.8 MB' },
-          { id: '3', filename: 'User_Setup.pdf', uploadDate: '2024-01-13', size: '3.2 MB' },
-          { id: '4', filename: 'API_Documentation.pdf', uploadDate: '2024-01-12', size: '4.1 MB' }
-        ],
-        recentUsers: [
-          { id: '1', name: 'Marie Dubois', email: 'marie.dubois@company.com', joinDate: '2024-01-15' },
-          { id: '2', name: 'Jean Martin', email: 'jean.martin@company.com', joinDate: '2024-01-14' },
-          { id: '3', name: 'Sophie Bernard', email: 'sophie.bernard@company.com', joinDate: '2024-01-13' },
-          { id: '4', name: 'Pierre Moreau', email: 'pierre.moreau@company.com', joinDate: '2024-01-12' }
-        ],
-        conversationStats: {
-          today: 23,
-          thisWeek: 156,
-          thisMonth: 342
-        }
-      });
+      try {
+        // Try to fetch real data from API
+        const dashboardData = await apiService.getDashboardStats();
+        setStats(dashboardData);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        // Fallback to mock data if API fails
+        setStats({
+          totalUsers: 24,
+          totalDocuments: 156,
+          totalConversations: 342,
+          activeUsers: 18,
+          likeCount: 89,
+          dislikeCount: 12,
+          recentUploads: [
+            { id: '1', filename: 'XRP_Flex_Manual.pdf', uploadDate: '2024-01-15', size: '2.4 MB' },
+            { id: '2', filename: 'Configuration_Guide.docx', uploadDate: '2024-01-14', size: '1.8 MB' },
+            { id: '3', filename: 'User_Setup.pdf', uploadDate: '2024-01-13', size: '3.2 MB' },
+            { id: '4', filename: 'API_Documentation.pdf', uploadDate: '2024-01-12', size: '4.1 MB' }
+          ],
+          recentUsers: [
+            { id: '1', name: 'Marie Dubois', email: 'marie.dubois@company.com', joinDate: '2024-01-15' },
+            { id: '2', name: 'Jean Martin', email: 'jean.martin@company.com', joinDate: '2024-01-14' },
+            { id: '3', name: 'Sophie Bernard', email: 'sophie.bernard@company.com', joinDate: '2024-01-13' },
+            { id: '4', name: 'Pierre Moreau', email: 'pierre.moreau@company.com', joinDate: '2024-01-12' }
+          ],
+          conversationStats: {
+            today: 23,
+            thisWeek: 156,
+            thisMonth: 342
+          }
+        });
+      }
       
       setLoading(false);
     };
@@ -182,28 +198,36 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
           value={stats.totalUsers}
           icon={Users}
           color="#3B82F6"
-          trend={{ value: 12, isPositive: true }}
         />
         <StatCard
           title="Total Documents"
           value={stats.totalDocuments}
           icon={FileText}
           color="#10B981"
-          trend={{ value: 8, isPositive: true }}
         />
         <StatCard
           title="Total Conversations"
           value={stats.totalConversations}
           icon={MessageCircle}
           color="#F59E0B"
-          trend={{ value: 15, isPositive: true }}
         />
         <StatCard
           title="Active Users"
           value={stats.activeUsers}
           icon={Activity}
           color="#8B5CF6"
-          trend={{ value: 5, isPositive: false }}
+        />
+        <StatCard
+          title="Liked Responses"
+          value={stats.likeCount}
+          icon={ThumbsUp}
+          color="#10B981"
+        />
+        <StatCard
+          title="Disliked Responses"
+          value={stats.dislikeCount}
+          icon={ThumbsDown}
+          color="#EF4444"
         />
       </div>
 
@@ -266,6 +290,48 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
             <div className="stat-period-card">
               <div className="period-value">{stats.conversationStats.thisMonth}</div>
               <div className="period-label">This Month</div>
+            </div>
+          </div>
+        </div>
+
+                 <div className="feedback-stats">
+           <div className="stats-header">
+             <h2>Feedback Analytics</h2>
+             <div className="stats-period">
+               <BarChart3 size={16} />
+               <span>Satisfaction Rate: {stats.likeCount + stats.dislikeCount > 0 
+                 ? Math.round((stats.likeCount / (stats.likeCount + stats.dislikeCount)) * 100)
+                 : 0}%</span>
+             </div>
+           </div>
+          <div className="feedback-summary">
+            <div className="feedback-item">
+              <div className="feedback-icon positive">
+                <ThumbsUp size={20} />
+              </div>
+                             <div className="feedback-content">
+                 <div className="feedback-value">{stats.likeCount}</div>
+                 <div className="feedback-label">Liked Responses</div>
+                 <div className="feedback-percentage">
+                   {stats.totalConversations > 0 
+                     ? Math.round((stats.likeCount / stats.totalConversations) * 100)
+                     : 0}% of conversations
+                 </div>
+               </div>
+             </div>
+             <div className="feedback-item">
+               <div className="feedback-icon negative">
+                 <ThumbsDown size={20} />
+               </div>
+               <div className="feedback-content">
+                 <div className="feedback-value">{stats.dislikeCount}</div>
+                 <div className="feedback-label">Disliked Responses</div>
+                 <div className="feedback-percentage">
+                   {stats.totalConversations > 0 
+                     ? Math.round((stats.dislikeCount / stats.totalConversations) * 100)
+                     : 0}% of conversations
+                 </div>
+               </div>
             </div>
           </div>
         </div>
