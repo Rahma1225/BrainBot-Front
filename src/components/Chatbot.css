@@ -293,6 +293,34 @@ html, body, #root {
   line-height: 1.6;
   text-align: left;
   color: #1e293b;
+  /* Ensure text content stays within bounds */
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Ensure ReactMarkdown content stays within message bounds */
+.message-text * {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Ensure lists stay within message bounds */
+.message-text ol,
+.message-text ul {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.message-text li {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin-bottom: 0.25rem;
 }
 
 .message-time {
