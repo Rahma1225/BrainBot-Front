@@ -27,6 +27,13 @@ interface DashboardStats {
   activeUsers: number;
   likeCount: number;
   dislikeCount: number;
+  documentTypeStats: {
+    pdf: number;
+    word: number;
+    excel: number;
+    powerpoint: number;
+    other: number;
+  };
   recentUploads: Array<{
     id: string;
     filename: string;
@@ -55,6 +62,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
     activeUsers: 0,
     likeCount: 0,
     dislikeCount: 0,
+    documentTypeStats: {
+      pdf: 0,
+      word: 0,
+      excel: 0,
+      powerpoint: 0,
+      other: 0
+    },
     recentUploads: [],
     recentUsers: [],
     conversationStats: {
@@ -84,6 +98,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
           activeUsers: 18,
           likeCount: 89,
           dislikeCount: 12,
+          documentTypeStats: {
+            pdf: 89,
+            word: 34,
+            excel: 18,
+            powerpoint: 12,
+            other: 3
+          },
           recentUploads: [
             { id: '1', filename: 'XRP_Flex_Manual.pdf', uploadDate: '2024-01-15', size: '2.4 MB' },
             { id: '2', filename: 'Configuration_Guide.docx', uploadDate: '2024-01-14', size: '1.8 MB' },
@@ -332,6 +353,88 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
                      : 0}% of conversations
                  </div>
                </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="document-type-stats">
+          <div className="stats-header">
+            <h2>Document Type Distribution</h2>
+            <div className="stats-period">
+              <FileText size={16} />
+              <span>Total: {stats.totalDocuments} documents</span>
+            </div>
+          </div>
+          <div className="document-type-summary">
+            <div className="document-type-item">
+              <div className="document-type-icon pdf">
+                <FileText size={20} />
+              </div>
+              <div className="document-type-content">
+                <div className="document-type-value">{stats.documentTypeStats.pdf}</div>
+                <div className="document-type-label">PDF Files</div>
+                <div className="document-type-percentage">
+                  {stats.totalDocuments > 0 
+                    ? Math.round((stats.documentTypeStats.pdf / stats.totalDocuments) * 100)
+                    : 0}% of total
+                </div>
+              </div>
+            </div>
+            <div className="document-type-item">
+              <div className="document-type-icon word">
+                <FileText size={20} />
+              </div>
+              <div className="document-type-content">
+                <div className="document-type-value">{stats.documentTypeStats.word}</div>
+                <div className="document-type-label">Word Documents</div>
+                <div className="document-type-percentage">
+                  {stats.totalDocuments > 0 
+                    ? Math.round((stats.documentTypeStats.word / stats.totalDocuments) * 100)
+                    : 0}% of total
+                </div>
+              </div>
+            </div>
+            <div className="document-type-item">
+              <div className="document-type-icon excel">
+                <FileText size={20} />
+              </div>
+              <div className="document-type-content">
+                <div className="document-type-value">{stats.documentTypeStats.excel}</div>
+                <div className="document-type-label">Excel Files</div>
+                <div className="document-type-percentage">
+                  {stats.totalDocuments > 0 
+                    ? Math.round((stats.documentTypeStats.excel / stats.totalDocuments) * 100)
+                    : 0}% of total
+                </div>
+              </div>
+            </div>
+            <div className="document-type-item">
+              <div className="document-type-icon powerpoint">
+                <FileText size={20} />
+              </div>
+              <div className="document-type-content">
+                <div className="document-type-value">{stats.documentTypeStats.powerpoint}</div>
+                <div className="document-type-label">PowerPoint Files</div>
+                <div className="document-type-percentage">
+                  {stats.totalDocuments > 0 
+                    ? Math.round((stats.documentTypeStats.powerpoint / stats.totalDocuments) * 100)
+                    : 0}% of total
+                </div>
+              </div>
+            </div>
+            <div className="document-type-item">
+              <div className="document-type-icon other">
+                <FileText size={20} />
+              </div>
+              <div className="document-type-content">
+                <div className="document-type-value">{stats.documentTypeStats.other}</div>
+                <div className="document-type-label">Other Files</div>
+                <div className="document-type-percentage">
+                  {stats.totalDocuments > 0 
+                    ? Math.round((stats.documentTypeStats.other / stats.totalDocuments) * 100)
+                    : 0}% of total
+                </div>
+              </div>
             </div>
           </div>
         </div>

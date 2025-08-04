@@ -278,7 +278,7 @@ class ApiService {
   }
 
   //Chat
-  async askChat(prompt: string): Promise<string> {
+  async askChat(prompt: string, role: string): Promise<string> {
     const url = `${API_USER_BASE_URL}/users/ask`; // ✅ Corrected endpoint
     const token = getStoredToken();
   
@@ -288,7 +288,7 @@ class ApiService {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, role }),
     };
   
     try {
@@ -442,11 +442,11 @@ class ApiService {
       `/users/conversations/${conversationId}/messages`, {}, API_USER_BASE_URL
     );
   }
-  async addMessageToConversation(conversationId: string, prompt: string): Promise<{ prompt: string; response: string; timestamp: string; id?: string }> {
+  async addMessageToConversation(conversationId: string, prompt: string, role: string): Promise<{ prompt: string; response: string; timestamp: string; id?: string }> {
     return this.request<{ prompt: string; response: string; timestamp: string; id?: string }>(
       `/users/conversations/${conversationId}/messages`, {
         method: 'POST',
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt, role })
         // Do NOT set headers here! The request method will handle it.
       },
       API_USER_BASE_URL
@@ -481,6 +481,13 @@ class ApiService {
     activeUsers: number;
     likeCount: number;
     dislikeCount: number;
+    documentTypeStats: {
+      pdf: number;
+      word: number;
+      excel: number;
+      powerpoint: number;
+      other: number;
+    };
     recentUploads: Array<{
       id: string;
       filename: string;
@@ -508,6 +515,13 @@ class ApiService {
         activeUsers: number;
         likeCount: number;
         dislikeCount: number;
+        documentTypeStats: {
+          pdf: number;
+          word: number;
+          excel: number;
+          powerpoint: number;
+          other: number;
+        };
         recentUploads: Array<{
           id: string;
           filename: string;
@@ -590,6 +604,19 @@ class ApiService {
         joinDate: new Date(Date.now() - (index + 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
       }));
 
+      // Calculate document type statistics
+      const documentTypeStats = {
+        pdf: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.pdf')).length,
+        word: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.docx') || doc.fileName.toLowerCase().endsWith('.doc')).length,
+        excel: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.xlsx') || doc.fileName.toLowerCase().endsWith('.xls')).length,
+        powerpoint: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.pptx') || doc.fileName.toLowerCase().endsWith('.ppt')).length,
+        other: documents.filter(doc => {
+          const ext = doc.fileName.toLowerCase();
+          return !ext.endsWith('.pdf') && !ext.endsWith('.docx') && !ext.endsWith('.doc') && 
+                 !ext.endsWith('.xlsx') && !ext.endsWith('.xls') && !ext.endsWith('.pptx') && !ext.endsWith('.ppt');
+        }).length
+      };
+
       return {
         totalUsers: users.length,
         totalDocuments: documents.length,
@@ -597,6 +624,7 @@ class ApiService {
         activeUsers: Math.max(1, Math.floor(users.length * 0.75)), // Estimate active users
         likeCount,
         dislikeCount,
+        documentTypeStats,
         recentUploads,
         recentUsers,
         conversationStats: {

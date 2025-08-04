@@ -37,7 +37,7 @@ function App() {
             setCurrentUser({
               name: userInfo.userName || '',
               email: userInfo.email || '',
-              role: userInfo.role // Use the exact string from backend
+              role: userInfo.role
             });
           } catch (error) {
             console.error('Error parsing stored user info:', error);
@@ -68,8 +68,6 @@ function App() {
     };
     token?: string;
   }) => {
-    console.log('Login successful:', userData);
-    
     if (userData.userInfo) {
       setCurrentUser({
         name: userData.userInfo.userName,

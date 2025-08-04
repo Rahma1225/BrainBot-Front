@@ -88,9 +88,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <button 
           onClick={handleBackToLanding}
           className="back-to-landing-btn"
+          title="Back to landing page"
         >
-          <ArrowLeft size={16} />
-          Back
+          <ArrowLeft size={20} />
         </button>
         <div className="login-header">
           <div className="login-logo">

@@ -479,4 +479,104 @@
   .period-value {
     font-size: 1.5rem;
   }
-} 
+}
+
+/* Document Type Statistics */
+.document-type-stats {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E5E7EB;
+  margin-top: 1.5rem;
+}
+
+.document-type-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.document-type-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.document-type-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.document-type-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.document-type-icon.pdf {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+.document-type-icon.word {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+}
+
+.document-type-icon.excel {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.document-type-icon.powerpoint {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.document-type-icon.other {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+}
+
+.document-type-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.document-type-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 0.25rem;
+}
+
+.document-type-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.document-type-percentage {
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+/* Responsive adjustments for document type stats */
+@media (max-width: 768px) {
+  .document-type-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .document-type-item {
+    padding: 1rem;
+  }
+}

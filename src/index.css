@@ -27,6 +27,7 @@ html, body {
   overflow-x: hidden;
   overflow-y: auto;
   background: white;
+  position: relative;
 }
 
 #root {

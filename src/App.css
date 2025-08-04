@@ -82,6 +82,8 @@ html {
   margin: 0;
   padding: 0;
   background: transparent;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app {

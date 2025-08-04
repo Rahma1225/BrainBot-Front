@@ -96,7 +96,8 @@
   align-items: center;
   position: relative;
   margin: 0;
-  height: 450px;
+  height: 520px;
+  overflow: visible;
 }
 .upload-page-modern-wrapper .upload-back-btn {
   display: flex;
@@ -244,7 +245,7 @@
   cursor: not-allowed;
 }
 .upload-page-modern-wrapper .upload-message-modern {
-  margin-top: 2.2rem;
+  margin-top: 1.5rem;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -255,6 +256,8 @@
   box-shadow: 0 2px 8px rgba(30,64,175,0.08);
   justify-content: center;
   animation: fadeIn 0.4s;
+  position: relative;
+  z-index: 10;
 }
 .upload-page-modern-wrapper .upload-message-modern.success {
   background: #d1fae5;
@@ -278,7 +281,7 @@
   align-items: center;
   position: relative;
   margin: 0;
-  height: 450px;
+  height: 520px;
   overflow-y: auto;
 }
 .upload-page-modern-wrapper .document-list-title {

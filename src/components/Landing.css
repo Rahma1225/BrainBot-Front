@@ -4,9 +4,11 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
   background: transparent;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
 }
 
 /* Navigation */
@@ -22,6 +24,7 @@
   padding: 1rem 0;
   width: 100%;
   margin: 0;
+  height: auto;
 }
 
 .nav-content {
@@ -101,6 +104,7 @@
   max-width: 100%;
   margin: 0;
   position: relative;
+  overflow: visible;
 }
 
 .hero-section::before {
@@ -534,8 +538,13 @@
   font-size: 0.9rem;
 }
 
-/* Responsive Design */
+/* Ensure scrolling works on all devices */
 @media (max-width: 768px) {
+  .landing-container {
+    overflow-y: auto;
+    height: auto;
+  }
+  
   .mobile-menu-btn {
     display: block;
   }
@@ -591,6 +600,12 @@
 }
 
 @media (max-width: 480px) {
+  .landing-container {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  
   .nav-content {
     padding: 0 1rem;
   }

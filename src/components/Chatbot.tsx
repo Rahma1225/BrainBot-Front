@@ -265,7 +265,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
         conversationId = newConv.id;
       }
       // Send to backend and get bot response
-      const botMsg = await apiService.addMessageToConversation(conversationId, inputMessage);
+      console.log('Sending message with role:', currentUser?.role); // Debug log
+      const botMsg = await apiService.addMessageToConversation(conversationId, inputMessage, currentUser?.role);
       // Animate bot response
       setAnimatingBot(true);
       setPendingBotMessage("");
@@ -321,8 +322,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
 
   // Determine assistant name based on role
   let assistantName = 'BrainBot Assistant';
-  if (currentUser.role === 'support') assistantName = 'BrainBot PMI Assistant';
-  else if (currentUser.role === 'consultant') assistantName = 'BrainBot FLEX Assistant';
+  if (currentUser?.role === 'support') assistantName = 'BrainBot PMI Assistant';
+  else if (currentUser?.role === 'consultant') assistantName = 'BrainBot FLEX Assistant';
 
   const handleDeleteConversation = async (id: string) => {
     try {
@@ -461,7 +462,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
                   )}
                   <div className={`message ${message.isBot ? 'bot' : 'user'}`}>
                     <div className="message-avatar">
-                      {message.isBot ? <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg> : <span>{getUserInitials(currentUser.name)}</span>}
+                      {message.isBot ? <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg> : <span>{getUserInitials(currentUser?.name || 'User')}</span>}
                     </div>
                                          <div className="message-content">
                        <div className="message-text">
@@ -567,72 +568,72 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
               </button>
             </form>
           </div>
-        </div>
-      </div>
-      {/* Fallback input area - always visible */}
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: '260px',
-        right: 0,
-        background: '#f7fafd',
-        padding: '1rem 1.5rem',
-        borderTop: '1px solid #e5e7eb',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        minHeight: '80px'
-      }}>
-        <form onSubmit={handleSendMessage} style={{
-          display: 'flex',
-          gap: '0.7rem',
-          alignItems: 'center',
-          width: '100%',
-          background: '#ffffff',
-          borderRadius: '8px',
-          padding: '0.5rem'
-        }}>
-          <textarea
-            value={inputMessage}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="💬 CLICK HERE TO TYPE YOUR MESSAGE - Press Enter to send..."
-            style={{
-              flex: 1,
-              padding: '0.7rem 1rem',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              background: 'white',
-              color: '#1e293b',
-              fontWeight: 500,
-              resize: 'none',
-              minHeight: '36px',
-              maxHeight: '90px',
-              width: '100%',
-              outline: 'none'
-            }}
-            rows={1}
-          />
-          <button type="submit" disabled={!inputMessage.trim()} style={{
-            width: '38px',
-            height: '38px',
-            background: '#2563eb',
-            border: 'none',
-            borderRadius: '8px',
-            color: 'white',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.1rem'
-          }}>
-            <span style={{ fontSize: '1.7rem', lineHeight: 1 }}>→</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
+                 </div>
+       </div>
+       {/* Fallback input area - always visible */}
+       <div style={{
+         position: 'fixed',
+         bottom: 0,
+         left: '260px',
+         right: 0,
+         background: '#f7fafd',
+         padding: '1rem 1.5rem',
+         borderTop: '1px solid #e5e7eb',
+         zIndex: 1000,
+         display: 'flex',
+         alignItems: 'center',
+         minHeight: '80px'
+       }}>
+         <form onSubmit={handleSendMessage} style={{
+           display: 'flex',
+           gap: '0.7rem',
+           alignItems: 'center',
+           width: '100%',
+           background: '#ffffff',
+           borderRadius: '8px',
+           padding: '0.5rem'
+         }}>
+           <textarea
+             value={inputMessage}
+             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInputMessage(e.target.value)}
+             onKeyPress={handleKeyPress}
+             placeholder="💬 CLICK HERE TO TYPE YOUR MESSAGE - Press Enter to send..."
+             style={{
+               flex: 1,
+               padding: '0.7rem 1rem',
+               border: '1px solid #e5e7eb',
+               borderRadius: '8px',
+               fontSize: '1rem',
+               background: 'white',
+               color: '#1e293b',
+               fontWeight: 500,
+               resize: 'none',
+               minHeight: '36px',
+               maxHeight: '90px',
+               width: '100%',
+               outline: 'none'
+             }}
+             rows={1}
+           />
+           <button type="submit" disabled={!inputMessage.trim()} style={{
+             width: '38px',
+             height: '38px',
+             background: '#2563eb',
+             border: 'none',
+             borderRadius: '8px',
+             color: 'white',
+             cursor: 'pointer',
+             display: 'flex',
+             alignItems: 'center',
+             justifyContent: 'center',
+             fontSize: '1.1rem'
+           }}>
+             <span style={{ fontSize: '1.7rem', lineHeight: 1 }}>→</span>
+           </button>
+         </form>
+       </div>
+     </div>
+   );
+ };
 
 export default Chatbot;

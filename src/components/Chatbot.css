@@ -100,13 +100,6 @@ html, body, #root {
   font-size: 1rem;
 }
 
-.conversation-item.selected {
-  background: #e0e7ef;
-  border: 1px solid #2563eb;
-  color: #1e293b;
-  transform: scale(1.01);
-}
-
 
 
 .conversation-title {

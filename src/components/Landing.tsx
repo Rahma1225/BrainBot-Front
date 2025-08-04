@@ -120,8 +120,6 @@ const Landing: React.FC = () => {
       <section id="features" className="features-section">
         <div className="container">
           <div className="section-header">
-            <h2>Why Choose Our BrainBot?</h2>
-            <p>Powerful features that make conversations meaningful and efficient</p>
           </div>
           <div className="features-grid">
             {features.map((feature, index) => (
@@ -139,10 +137,6 @@ const Landing: React.FC = () => {
       {/* Testimonials Section */}
       <section id="testimonials" className="testimonials-section">
         <div className="container">
-          <div className="section-header">
-            <h2>What Our Users Say</h2>
-            <p>Join thousands of satisfied customers worldwide</p>
-          </div>
           <div className="testimonials-grid">
             {testimonials.map((testimonial, index) => (
               <div key={index} className="testimonial-card">
