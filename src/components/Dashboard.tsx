@@ -188,6 +188,69 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
     </div>
   );
 
+  // Circular Progress Component
+  const CircularProgress = ({ 
+    percentage, 
+    size = 120, 
+    strokeWidth = 8, 
+    color = "#10B981" 
+  }: {
+    percentage: number;
+    size?: number;
+    strokeWidth?: number;
+    color?: string;
+  }) => {
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+      <div className="circular-progress-container" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="circular-progress">
+          {/* Background circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="#E5E7EB"
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+          {/* Progress circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+            style={{ transition: 'stroke-dashoffset 0.5s ease-in-out' }}
+          />
+        </svg>
+        <div className="circular-progress-text">
+          <span className="circular-percentage">{percentage}%</span>
+          <span className="circular-label">Satisfaction</span>
+        </div>
+      </div>
+    );
+  };
+
+  // Calculate comprehensive feedback statistics
+  const totalFeedback = stats.likeCount + stats.dislikeCount;
+  const satisfactionRate = totalFeedback > 0 ? Math.round((stats.likeCount / totalFeedback) * 100) : 0;
+  const averageLikesPerConversation = stats.totalConversations > 0 ? (stats.likeCount / stats.totalConversations).toFixed(1) : '0.0';
+  const averageDislikesPerConversation = stats.totalConversations > 0 ? (stats.dislikeCount / stats.totalConversations).toFixed(1) : '0.0';
+  
+  // Calculate feedback engagement rate (percentage of conversations with any feedback)
+  const feedbackEngagementRate = stats.totalConversations > 0 
+    ? Math.min(Math.round((totalFeedback / stats.totalConversations) * 100), 100)
+    : 0;
+
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -320,37 +383,51 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
              <h2>Feedback Analytics</h2>
              <div className="stats-period">
                <BarChart3 size={16} />
-               <span>Satisfaction Rate: {stats.likeCount + stats.dislikeCount > 0 
-                 ? Math.round((stats.likeCount / (stats.likeCount + stats.dislikeCount)) * 100)
-                 : 0}%</span>
+               <span>Based on {totalFeedback} total feedback responses</span>
              </div>
            </div>
           <div className="feedback-summary">
-            <div className="feedback-item">
-              <div className="feedback-icon positive">
-                <ThumbsUp size={20} />
+            <div className="feedback-circular-section">
+              <CircularProgress 
+                percentage={satisfactionRate} 
+                size={140} 
+                strokeWidth={10} 
+                color="#10B981" 
+              />
+              <div className="feedback-circular-info">
+                <div className="feedback-main-stat">
+                  <span className="feedback-main-value">{satisfactionRate}%</span>
+                  <span className="feedback-main-label">Satisfaction Rate</span>
+                </div>
+                <div className="feedback-sub-stats">
+                  <div className="feedback-sub-stat">
+                    <ThumbsUp size={16} className="feedback-sub-icon positive" />
+                    <span>{stats.likeCount} likes</span>
+                  </div>
+                  <div className="feedback-sub-stat">
+                    <ThumbsDown size={16} className="feedback-sub-icon negative" />
+                    <span>{stats.dislikeCount} dislikes</span>
+                  </div>
+                </div>
               </div>
-                             <div className="feedback-content">
-                 <div className="feedback-value">{stats.likeCount}</div>
-                 <div className="feedback-label">Liked Responses</div>
-                 <div className="feedback-percentage">
-                   {stats.totalConversations > 0 
-                     ? Math.round((stats.likeCount / stats.totalConversations) * 100)
-                     : 0}% of conversations
-                 </div>
-               </div>
-             </div>
-             <div className="feedback-item">
-               <div className="feedback-icon negative">
-                 <ThumbsDown size={20} />
-               </div>
-               <div className="feedback-content">
-                 <div className="feedback-value">{stats.dislikeCount}</div>
-                 <div className="feedback-label">Disliked Responses</div>
-                 <div className="feedback-percentage">
-                   {stats.totalConversations > 0 
-                     ? Math.round((stats.dislikeCount / stats.totalConversations) * 100)
-                     : 0}% of conversations
+            </div>
+            <div className="feedback-details">
+              <div className="feedback-detail-item">
+                <div className="feedback-detail-label">Average Likes per Conversation</div>
+                <div className="feedback-detail-value">{averageLikesPerConversation}</div>
+              </div>
+              <div className="feedback-detail-item">
+                <div className="feedback-detail-label">Average Dislikes per Conversation</div>
+                <div className="feedback-detail-value">{averageDislikesPerConversation}</div>
+              </div>
+              <div className="feedback-detail-item">
+                <div className="feedback-detail-label">Total Conversations</div>
+                <div className="feedback-detail-value">{stats.totalConversations}</div>
+              </div>
+                             <div className="feedback-detail-item">
+                 <div className="feedback-detail-label">Conversations with Feedback</div>
+                 <div className="feedback-detail-value">
+                   {feedbackEngagementRate}%
                  </div>
                </div>
             </div>
