@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, User, Mail, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
 import timsoftLogo from '../assets/timsoft.png';
@@ -109,7 +109,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           )}
           
           <div className="form-group">
-            <label htmlFor="username" className="form-label">Username</label>
+            <label htmlFor="username" className="form-label">
+              <User size={16} />
+              Username
+            </label>
             <input
               type="text"
               id="username"
@@ -124,7 +127,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
+            <label htmlFor="password" className="form-label">
+              <Lock size={16} />
+              Password
+            </label>
             <div className="password-field-container">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -158,7 +164,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </button>
           <div style={{ textAlign: 'center', margin: '1rem 0 0.5rem 0' }}>
             <button type="button" className="forgot-password-link" onClick={() => navigate('/forgot-password')}>
-              Forgot password?
+              Forgot password ?
+            </button>
+          </div>
+          
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <button type="button" className="join-link" onClick={() => navigate('/register')}>
+              Don't have an account ? Join BrainBot
             </button>
           </div>
           

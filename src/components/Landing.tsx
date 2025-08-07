@@ -12,6 +12,10 @@ const Landing: React.FC = () => {
     navigate('/login');
   };
 
+  const handleRegisterClick = () => {
+    navigate('/register');
+  };
+
   const features = [
     {
       icon: <Bot className="feature-icon" />,
@@ -63,6 +67,9 @@ const Landing: React.FC = () => {
           <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
             <a href="#features">Features</a>
             <a href="#testimonials">Testimonials</a>
+            <button className="nav-register-btn" onClick={handleRegisterClick}>
+              Register
+            </button>
             <button className="nav-login-btn" onClick={handleLoginClick}>
               Sign In
             </button>

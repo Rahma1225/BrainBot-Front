@@ -55,6 +55,34 @@ export interface CreateUserDto {
   Role: string;
 }
 
+export interface RegisterUserDto {
+  UserName: string;
+  Email: string;
+  Role: string;
+}
+
+export interface RegisterRequest {
+  id: string;
+  userName: string;
+  email: string;
+  role: string;
+  requestDate: string;
+  isApproved: boolean;
+}
+
+export interface PendingRegistration {
+  id: string;
+  userName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  company?: string;
+  position?: string;
+  phoneNumber?: string;
+  requestDate: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
 export interface LoginDto {
   UserName: string;
   Password: string;
@@ -149,6 +177,29 @@ class ApiService {
     return this.request<{ message: string }>('/users/create', {
       method: 'POST',
       body: JSON.stringify(userData),
+    }, API_USER_BASE_URL);
+  }
+
+  async registerUser(userData: RegisterUserDto): Promise<{ message: string }> {
+    return this.request<{ message: string }>('/users/register-request', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    }, API_USER_BASE_URL);
+  }
+
+  async getRegisterRequests(): Promise<RegisterRequest[]> {
+    return this.request<RegisterRequest[]>('/users/register-requests', { method: 'GET' }, API_USER_BASE_URL);
+  }
+
+  async declineRegisterRequest(requestId: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/users/decline-register-request/${requestId}`, {
+      method: 'DELETE',
+    }, API_USER_BASE_URL);
+  }
+
+  async approveRegisterRequest(requestId: string): Promise<{ message: string; defaultPassword: string }> {
+    return this.request<{ message: string; defaultPassword: string }>(`/users/approve-register-request/${requestId}`, {
+      method: 'POST',
     }, API_USER_BASE_URL);
   }
 
@@ -505,135 +556,99 @@ class ApiService {
       thisWeek: number;
       thisMonth: number;
     };
-  }> {
+      }> {
+    // Since the backend endpoint doesn't exist, calculate from existing data
+    console.log('Dashboard stats endpoint not available, calculating from existing data...');
+      
+    const [users, documents, conversations] = await Promise.all([
+      this.getUsers().catch(() => []),
+      this.getUserDocuments().catch(() => []),
+      this.getConversationsList().catch(() => [])
+    ]);
+
+    // Calculate like/dislike counts from conversations
+    let likeCount = 0;
+    let dislikeCount = 0;
+    
     try {
-      // Try to get data from backend endpoint if it exists
-      return await this.request<{
-        totalUsers: number;
-        totalDocuments: number;
-        totalConversations: number;
-        activeUsers: number;
-        likeCount: number;
-        dislikeCount: number;
-        documentTypeStats: {
-          pdf: number;
-          word: number;
-          excel: number;
-          powerpoint: number;
-          other: number;
-        };
-        recentUploads: Array<{
-          id: string;
-          filename: string;
-          uploadDate: string;
-          size: string;
-        }>;
-        recentUsers: Array<{
-          id: string;
-          name: string;
-          email: string;
-          joinDate: string;
-        }>;
-        conversationStats: {
-          today: number;
-          thisWeek: number;
-          thisMonth: number;
-        };
-      }>('/users/dashboard-stats', {}, API_USER_BASE_URL);
+      // Get messages from all conversations to count feedback
+      const allMessages = await Promise.all(
+        conversations.map(conv => 
+          this.getConversationMessages(conv.id).catch(() => [])
+        )
+      );
+      
+      allMessages.flat().forEach(message => {
+        if (message.feedback === 'like') likeCount++;
+        if (message.feedback === 'dislike') dislikeCount++;
+      });
     } catch (error) {
-      // If backend endpoint doesn't exist, calculate from existing data
-      console.log('Dashboard stats endpoint not available, calculating from existing data...');
-      
-      const [users, documents, conversations] = await Promise.all([
-        this.getUsers().catch(() => []),
-        this.getUserDocuments().catch(() => []),
-        this.getConversationsList().catch(() => [])
-      ]);
-
-      // Calculate like/dislike counts from conversations
-      let likeCount = 0;
-      let dislikeCount = 0;
-      
-      try {
-        // Get messages from all conversations to count feedback
-        const allMessages = await Promise.all(
-          conversations.map(conv => 
-            this.getConversationMessages(conv.id).catch(() => [])
-          )
-        );
-        
-        allMessages.flat().forEach(message => {
-          if (message.feedback === 'like') likeCount++;
-          if (message.feedback === 'dislike') dislikeCount++;
-        });
-      } catch (error) {
-        console.log('Could not fetch message feedback, using default values');
-      }
-
-      // Calculate conversation stats based on current date
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-      const todayConversations = conversations.filter(conv => 
-        new Date(conv.createdAt) >= today
-      ).length;
-      
-      const weekConversations = conversations.filter(conv => 
-        new Date(conv.createdAt) >= weekAgo
-      ).length;
-      
-      const monthConversations = conversations.filter(conv => 
-        new Date(conv.createdAt) >= monthAgo
-      ).length;
-
-      // Format recent uploads
-      const recentUploads = documents.slice(0, 4).map((doc, index) => ({
-        id: (index + 1).toString(),
-        filename: doc.fileName,
-        uploadDate: new Date(doc.uploadedAt).toISOString().split('T')[0],
-        size: '2.4 MB' // Mock size since it's not available in the API
-      }));
-
-      // Format recent users (mock data since we don't have user creation dates)
-      const recentUsers = users.slice(0, 4).map((user, index) => ({
-        id: user.id,
-        name: user.userName,
-        email: user.email,
-        joinDate: new Date(Date.now() - (index + 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-      }));
-
-      // Calculate document type statistics
-      const documentTypeStats = {
-        pdf: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.pdf')).length,
-        word: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.docx') || doc.fileName.toLowerCase().endsWith('.doc')).length,
-        excel: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.xlsx') || doc.fileName.toLowerCase().endsWith('.xls')).length,
-        powerpoint: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.pptx') || doc.fileName.toLowerCase().endsWith('.ppt')).length,
-        other: documents.filter(doc => {
-          const ext = doc.fileName.toLowerCase();
-          return !ext.endsWith('.pdf') && !ext.endsWith('.docx') && !ext.endsWith('.doc') && 
-                 !ext.endsWith('.xlsx') && !ext.endsWith('.xls') && !ext.endsWith('.pptx') && !ext.endsWith('.ppt');
-        }).length
-      };
-
-      return {
-        totalUsers: users.length,
-        totalDocuments: documents.length,
-        totalConversations: conversations.length,
-        activeUsers: Math.max(1, Math.floor(users.length * 0.75)), // Estimate active users
-        likeCount,
-        dislikeCount,
-        documentTypeStats,
-        recentUploads,
-        recentUsers,
-        conversationStats: {
-          today: todayConversations,
-          thisWeek: weekConversations,
-          thisMonth: monthConversations
-        }
-      };
+      console.log('Could not fetch message feedback, using default values');
     }
+
+    // Calculate conversation stats based on current date
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const todayConversations = conversations.filter(conv => 
+      new Date(conv.createdAt) >= today
+    ).length;
+    
+    const weekConversations = conversations.filter(conv => 
+      new Date(conv.createdAt) >= weekAgo
+    ).length;
+    
+    const monthConversations = conversations.filter(conv => 
+      new Date(conv.createdAt) >= monthAgo
+    ).length;
+
+    // Format recent uploads
+    const recentUploads = documents.slice(0, 4).map((doc, index) => ({
+      id: (index + 1).toString(),
+      filename: doc.fileName,
+      uploadDate: new Date(doc.uploadedAt).toISOString().split('T')[0],
+      size: '2.4 MB' // Mock size since it's not available in the API
+    }));
+
+    // Format recent users (mock data since we don't have user creation dates)
+    const recentUsers = users.slice(0, 4).map((user, index) => ({
+      id: user.id,
+      name: user.userName,
+      email: user.email,
+      joinDate: new Date(Date.now() - (index + 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    }));
+
+    // Calculate document type statistics
+    const documentTypeStats = {
+      pdf: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.pdf')).length,
+      word: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.docx') || doc.fileName.toLowerCase().endsWith('.doc')).length,
+      excel: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.xlsx') || doc.fileName.toLowerCase().endsWith('.xls')).length,
+      powerpoint: documents.filter(doc => doc.fileName.toLowerCase().endsWith('.pptx') || doc.fileName.toLowerCase().endsWith('.ppt')).length,
+      other: documents.filter(doc => {
+        const ext = doc.fileName.toLowerCase();
+        return !ext.endsWith('.pdf') && !ext.endsWith('.docx') && !ext.endsWith('.doc') && 
+               !ext.endsWith('.xlsx') && !ext.endsWith('.xls') && !ext.endsWith('.pptx') && !ext.endsWith('.ppt');
+      }).length
+    };
+
+    return {
+      totalUsers: users.length,
+      totalDocuments: documents.length,
+      totalConversations: conversations.length,
+      activeUsers: Math.max(1, Math.floor(users.length * 0.75)), // Estimate active users
+      likeCount,
+      dislikeCount,
+      documentTypeStats,
+      recentUploads,
+      recentUsers,
+      conversationStats: {
+        today: todayConversations,
+        thisWeek: weekConversations,
+        thisMonth: monthConversations
+      }
+    };
   }
 }
 

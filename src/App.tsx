@@ -9,6 +9,8 @@ import Layout from './layout/Layout';
 import { apiService } from './services/api';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import Register from './components/Register';
+import RegistrationRequests from './components/RegistrationRequests';
 import './App.css';
 import UploadDocument from './components/UploadDocument';
 import Dashboard from './components/Dashboard';
@@ -140,6 +142,22 @@ function App() {
               <PublicRoute>
                 <ResetPassword />
               </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/register" 
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/registration-requests" 
+            element={
+              <ProtectedRoute>
+                <RegistrationRequests />
+              </ProtectedRoute>
             } 
           />
 

@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -10,7 +10,7 @@
   position: relative;
 }
 
-.login-container::before {
+.register-container::before {
   content: '';
   position: absolute;
   top: 0;
@@ -22,7 +22,7 @@
   pointer-events: none;
 }
 
-.login-card {
+.register-card {
   background: #f9fafb;
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(30, 64, 175, 0.08);
@@ -50,12 +50,12 @@
   }
 }
 
-.login-header {
+.register-header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.login-logo {
+.register-logo {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,13 +66,13 @@
   margin-bottom: 1rem;
 }
 
-.logo-icon {
-  color: #3b82f6;
+.timsoft-logo {
   width: 32px;
   height: 32px;
+  object-fit: contain;
 }
 
-.login-title {
+.register-title {
   font-size: 1.75rem;
   font-weight: 700;
   color: #1e293b;
@@ -80,26 +80,35 @@
   line-height: 1.2;
 }
 
-.login-subtitle {
+.register-subtitle {
   color: #64748b;
   font-size: 1rem;
   line-height: 1.5;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   position: relative;
   text-align: left;
   width: 100%;
 }
 
 .form-group:last-of-type {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-label {
-  display: block;
-  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   font-weight: 700;
   color: #1e293b;
   font-size: 0.95rem;
@@ -110,8 +119,8 @@
   margin-left: 0;
 }
 
-.form-label::after {
-  display: none;
+.form-label svg {
+  color: #3b82f6;
 }
 
 .form-input {
@@ -130,7 +139,11 @@
   backdrop-filter: blur(10px);
 }
 
-
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
 
 .form-input::placeholder {
   color: #94a3b8;
@@ -138,7 +151,10 @@
   opacity: 0.8;
 }
 
-
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* Password field container */
 .password-field-container {
@@ -166,9 +182,10 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
-
-
-
+.password-toggle-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateY(-50%) scale(1.05);
+}
 
 .password-toggle-btn:disabled {
   opacity: 0.5;
@@ -189,26 +206,20 @@
   text-align: center;
 }
 
-/* Locked account error styling */
-.error-message.locked-account {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  font-weight: 600;
-  position: relative;
-  padding-left: 2.5rem;
+/* Success message styling */
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
-.error-message.locked-account::before {
-  content: '🔒';
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.1rem;
-}
-
-.login-btn {
+.register-btn {
   width: 100%;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
@@ -225,7 +236,7 @@
   overflow: hidden;
 }
 
-.login-btn::before {
+.register-btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -236,65 +247,28 @@
   transition: left 0.5s;
 }
 
-.login-btn:hover::before {
+.register-btn:hover::before {
   left: 100%;
 }
 
+.register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
 
+.register-btn:active {
+  transform: translateY(0);
+}
 
-
-
-.login-btn:disabled {
+.register-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
-.forgot-password {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.forgot-password a {
-  color: #3b82f6;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-}
-
-
-
-/* Internal Access Notice */
-.internal-notice {
-  text-align: center;
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  background: rgba(59, 130, 246, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(59, 130, 246, 0.15);
-}
-
-.internal-notice p {
-  margin: 0;
-  color: #64748b;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-.internal-notice strong {
-  color: #3b82f6;
-  font-weight: 600;
-}
-
-/* Enhanced focus states */
-
-
 /* Loading animation for button */
-.login-btn:disabled::after {
+.register-btn:disabled::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -313,74 +287,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
-@media (max-width: 480px) {
-  .login-container {
-    padding: 1rem;
-  }
-  
-  .login-card {
-    padding: 2rem 1.5rem;
-    max-width: 100%;
-  }
-  
-  .login-title {
-    font-size: 1.75rem;
-  }
-  
-  .login-logo {
-    font-size: 1.5rem;
-  }
-  
-  .logo-icon {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .form-input {
-    padding: 0.875rem 1rem;
-  }
-  
-  .login-btn {
-    padding: 0.875rem 1.25rem;
-    font-size: 1rem;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .login-card {
-    background: white;
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  .login-title,
-  .login-logo {
-    color: #1e293b;
-  }
-  
-  .login-subtitle {
-    color: #64748b;
-  }
-  
-  .form-label {
-    color: #374151;
-  }
-  
-  .form-input {
-    background: white;
-    border-color: #e5e7eb;
-    color: #374151;
-  }
-  
-  
-  
-  .form-input::placeholder {
-    color: #9ca3af;
-  }
-}
-
-.back-to-landing-btn {
+.back-to-login-btn {
   margin: 0 0 2rem 0;
   align-self: flex-start;
   background: none;
@@ -399,15 +306,13 @@
   height: 40px;
 }
 
-.back-to-landing-btn:hover {
+.back-to-login-btn:hover {
   background: rgba(100, 116, 139, 0.1);
   color: #3b82f6;
   transform: translateX(-2px);
 }
 
-
-
-.forgot-password-link {
+.back-to-login-link {
   background: none;
   border: none;
   color: #2563eb;
@@ -421,27 +326,100 @@
   display: inline-block;
 }
 
-.join-link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 0.98rem;
-  font-weight: 600;
-  padding: 0.2rem 0;
-  margin-top: 0.5rem;
-  transition: color 0.2s, text-shadow 0.2s;
-  display: inline-block;
-}
-
-.join-link:hover {
+.back-to-login-link:hover {
   color: #1d4ed8;
   text-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
 }
 
- 
+/* Responsive Design */
+@media (max-width: 768px) {
+  .register-container {
+    padding: 1rem;
+  }
+  
+  .register-card {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .register-title {
+    font-size: 1.75rem;
+  }
+  
+  .register-logo {
+    font-size: 1.5rem;
+  }
+  
+  .timsoft-logo {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .form-input {
+    padding: 0.875rem 1rem;
+  }
+  
+  .register-btn {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+}
 
- 
+@media (max-width: 480px) {
+  .register-card {
+    padding: 1.5rem 1rem;
+  }
+  
+  .register-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-label {
+    font-size: 0.9rem;
+  }
+  
+  .form-input {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.95rem;
+  }
+}
 
- 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .register-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  .register-title,
+  .register-logo {
+    color: #1e293b;
+  }
+  
+  .register-subtitle {
+    color: #64748b;
+  }
+  
+  .form-label {
+    color: #374151;
+  }
+  
+  .form-input {
+    background: white;
+    border-color: #e5e7eb;
+    color: #374151;
+  }
+  
+  .form-input:focus {
+    border-color: #3b82f6;
+  }
+  
+  .form-input::placeholder {
+    color: #9ca3af;
+  }
+}
