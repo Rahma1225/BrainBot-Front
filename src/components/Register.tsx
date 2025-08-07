@@ -10,7 +10,7 @@ const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    role: 'Admin'
+    role: 'support'
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -56,7 +56,7 @@ const Register: React.FC = () => {
       setFormData({
         username: '',
         email: '',
-        role: 'Admin'
+        role: 'support'
       });
 
     } catch (err: any) {
@@ -165,7 +165,6 @@ const Register: React.FC = () => {
               className="form-input"
               disabled={isLoading}
             >
-              <option value="admin">Admin</option>
               <option value="support">Support</option>
               <option value="consultant">Consultant</option>
             </select>
