@@ -156,7 +156,13 @@ function App() {
             path="/registration-requests" 
             element={
               <ProtectedRoute>
-                <RegistrationRequests />
+                {currentUser.role === 'admin' ? (
+                  <Layout onLogout={handleLogout} currentUser={currentUser}>
+                    <RegistrationRequests />
+                  </Layout>
+                ) : (
+                  <Navigate to="/chatbot" replace />
+                )}
               </ProtectedRoute>
             } 
           />

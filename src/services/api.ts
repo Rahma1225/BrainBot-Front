@@ -66,7 +66,7 @@ export interface RegisterRequest {
   userName: string;
   email: string;
   role: string;
-  requestDate: string;
+  requestedAt: string;
   isApproved: boolean;
 }
 

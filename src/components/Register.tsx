@@ -75,13 +75,17 @@ const Register: React.FC = () => {
     navigate('/');
   };
 
+  const handleBackToSignIn = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="register-container">
       <div className="register-card">
         <button 
           onClick={handleBackToLanding}
           className="back-to-login-btn"
-          title="Back to landing"
+          title="Back to landing page"
         >
           <ArrowLeft size={20} />
         </button>
@@ -176,7 +180,7 @@ const Register: React.FC = () => {
           </button>
           
           <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-            <button type="button" className="back-to-login-link" onClick={handleBackToLanding}>
+            <button type="button" className="back-to-login-link" onClick={handleBackToSignIn}>
               Already have an account ? Sign in
             </button>
           </div>
