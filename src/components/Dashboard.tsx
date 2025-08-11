@@ -20,6 +20,12 @@ interface DashboardProps {
   currentUser: { name: string; email: string; role: string };
 }
 
+interface QuestionStats {
+  question: string;
+  count: number;
+  percentage: number;
+}
+
 interface DashboardStats {
   totalUsers: number;
   totalDocuments: number;
@@ -51,6 +57,7 @@ interface DashboardStats {
     thisWeek: number;
     thisMonth: number;
   };
+  questionStats: Record<string, QuestionStats[]>;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
@@ -75,7 +82,8 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
       today: 0,
       thisWeek: 0,
       thisMonth: 0
-    }
+    },
+    questionStats: {}
   });
   const [loading, setLoading] = useState(true);
 
@@ -83,51 +91,93 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
     // Load dashboard data immediately
     const loadDashboardData = async () => {
       setLoading(true);
-      
       try {
-        // Try to fetch real data from API
+        // Fetch dashboard stats as before
         const dashboardData = await apiService.getDashboardStats();
-        setStats(dashboardData);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-        // Fallback to mock data if API fails
-        setStats({
-          totalUsers: 24,
-          totalDocuments: 156,
-          totalConversations: 342,
-          activeUsers: 18,
-          likeCount: 89,
-          dislikeCount: 12,
-          documentTypeStats: {
-            pdf: 89,
-            word: 34,
-            excel: 18,
-            powerpoint: 12,
-            other: 3
-          },
-          recentUploads: [
-            { id: '1', filename: 'XRP_Flex_Manual.pdf', uploadDate: '2024-01-15', size: '2.4 MB' },
-            { id: '2', filename: 'Configuration_Guide.docx', uploadDate: '2024-01-14', size: '1.8 MB' },
-            { id: '3', filename: 'User_Setup.pdf', uploadDate: '2024-01-13', size: '3.2 MB' },
-            { id: '4', filename: 'API_Documentation.pdf', uploadDate: '2024-01-12', size: '4.1 MB' }
-          ],
-          recentUsers: [
-            { id: '1', name: 'Marie Dubois', email: 'marie.dubois@company.com', joinDate: '2024-01-15' },
-            { id: '2', name: 'Jean Martin', email: 'jean.martin@company.com', joinDate: '2024-01-14' },
-            { id: '3', name: 'Sophie Bernard', email: 'sophie.bernard@company.com', joinDate: '2024-01-13' },
-            { id: '4', name: 'Pierre Moreau', email: 'pierre.moreau@company.com', joinDate: '2024-01-12' }
-          ],
-          conversationStats: {
-            today: 23,
-            thisWeek: 156,
-            thisMonth: 342
+
+        // Fetch all conversations
+        const conversations = await apiService.getConversationsList();
+        // Fetch all messages for each conversation
+        const allMessages = (await Promise.all(
+          conversations.map(conv => apiService.getConversationMessages(conv.id))
+        )).flat();
+
+        // Extract all prompts
+        const allPrompts = allMessages.map(msg => msg.prompt && msg.prompt.trim()).filter(Boolean);
+
+        // Define modules
+        const modules = [
+          "Configuration initiale",
+          "Module Finance",
+          "Gestion des devises",
+          "Module Banques",
+          "Fournisseurs",
+          "Taxes",
+          "Clients",
+          "Configuration du courriel",
+          "Configuration des utilisateurs",
+          "Articles non stockés",
+          "Organisation de la société",
+          "Module Stocks",
+          "Module Achats",
+          "Module Ventes"
+        ];
+
+        // Prepare stats per module
+        const moduleStats: Record<string, { question: string; count: number; percentage: number }[]> = {};
+        const promptCounts: Record<string, number> = {};
+        allPrompts.forEach(prompt => {
+          promptCounts[prompt] = (promptCounts[prompt] || 0) + 1;
+        });
+        const total = allPrompts.length;
+        // Assign prompts to modules
+        Object.entries(promptCounts).forEach(([question, count]) => {
+          const lower = question.toLowerCase();
+          const foundModule = modules.find(module => lower.includes(module.toLowerCase()));
+          if (foundModule) {
+            if (!moduleStats[foundModule]) moduleStats[foundModule] = [];
+            moduleStats[foundModule].push({ question, count, percentage: Math.round((count / total) * 100) });
           }
         });
+        // Sort prompts in each module by count and take top 5
+        modules.forEach(module => {
+          if (moduleStats[module]) {
+            moduleStats[module].sort((a, b) => b.count - a.count);
+            moduleStats[module] = moduleStats[module].slice(0, 5);
+          }
+        });
+        setStats({
+          ...dashboardData,
+          questionStats: moduleStats
+        });
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        setStats({
+          totalUsers: 0,
+          totalDocuments: 0,
+          totalConversations: 0,
+          activeUsers: 0,
+          likeCount: 0,
+          dislikeCount: 0,
+          documentTypeStats: {
+            pdf: 0,
+            word: 0,
+            excel: 0,
+            powerpoint: 0,
+            other: 0
+          },
+          recentUploads: [],
+          recentUsers: [],
+          conversationStats: {
+            today: 0,
+            thisWeek: 0,
+            thisMonth: 0
+          },
+          questionStats: {}
+        });
       }
-      
       setLoading(false);
     };
-
     loadDashboardData();
   }, []);
 
@@ -513,6 +563,41 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser }) => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="question-stats">
+          <div className="stats-header">
+            <h2>Questions les plus posées par module</h2>
+            <div className="stats-period">
+              <MessageCircle size={16} />
+              <span>Basé sur les questions utilisateurs</span>
+            </div>
+          </div>
+          <div className="question-stats-grid">
+            {Object.entries(stats.questionStats).map(([module, questions]) => (
+              questions.length > 0 && (
+                <div className="question-category" key={module}>
+                  <div className="question-category-header">
+                    <h3>{module}</h3>
+                  </div>
+                  <div className="question-list">
+                    {questions.map((item, index) => (
+                      <div key={index} className="question-item">
+                        <div className="question-content">
+                          <div className="question-text">{item.question}</div>
+                          <div className="question-meta">
+                            <span className="question-count">{item.count} fois</span>
+                            <span className="question-percentage">{item.percentage}%</span>
+                          </div>
+                        </div>
+                        <div className="question-rank">#{index + 1}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            ))}
           </div>
         </div>
       </div>

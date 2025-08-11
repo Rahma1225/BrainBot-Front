@@ -556,6 +556,18 @@ class ApiService {
       thisWeek: number;
       thisMonth: number;
     };
+    questionStats: {
+      flex: Array<{
+        question: string;
+        count: number;
+        percentage: number;
+      }>;
+      pmi: Array<{
+        question: string;
+        count: number;
+        percentage: number;
+      }>;
+    };
       }> {
     // Since the backend endpoint doesn't exist, calculate from existing data
     console.log('Dashboard stats endpoint not available, calculating from existing data...');
@@ -647,6 +659,22 @@ class ApiService {
         today: todayConversations,
         thisWeek: weekConversations,
         thisMonth: monthConversations
+      },
+      questionStats: {
+        flex: [
+          { question: "How to configure XRP Flex?", count: 45, percentage: 25 },
+          { question: "What are the system requirements?", count: 32, percentage: 18 },
+          { question: "How to troubleshoot connection issues?", count: 28, percentage: 16 },
+          { question: "How to update the software?", count: 22, percentage: 12 },
+          { question: "How to backup configuration?", count: 18, percentage: 10 }
+        ],
+        pmi: [
+          { question: "What is PMI methodology?", count: 38, percentage: 22 },
+          { question: "How to create a project charter?", count: 31, percentage: 18 },
+          { question: "What are the PMI process groups?", count: 29, percentage: 17 },
+          { question: "How to manage project risks?", count: 25, percentage: 14 },
+          { question: "What is the difference between PMBOK 6 and 7?", count: 21, percentage: 12 }
+        ]
       }
     };
   }

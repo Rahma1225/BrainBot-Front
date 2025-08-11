@@ -68,7 +68,7 @@ const RegistrationRequests: React.FC = () => {
   };
 
   const handleBackToDashboard = () => {
-    navigate('/dashboard');
+    navigate('/chatbot');
   };
 
   const formatDate = (dateString: string) => {
@@ -152,7 +152,7 @@ const RegistrationRequests: React.FC = () => {
       <button 
         className="registration-requests-back-btn-fixed" 
         onClick={handleBackToDashboard} 
-        title="Back to Dashboard"
+        title="Back to Chatbot"
       >
         <ArrowLeft size={20} />
       </button>
