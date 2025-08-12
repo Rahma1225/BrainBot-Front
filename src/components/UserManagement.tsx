@@ -21,7 +21,7 @@ interface UserManagementProps {
 
 const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
   React.useEffect(() => {
-    console.log('UserManagement mounted');
+    // Component mounted
   }, []);
   const navigate = useNavigate();
   
@@ -196,7 +196,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
         Lock: isLocked
       };
       
-      console.log('Sending lock data:', lockData); // Debug log
+
       
       const response = await apiService.lockUser(lockData);
       
@@ -204,12 +204,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       await loadUsers(); // Reload users to reflect changes
-      console.log('Users reloaded after lock operation'); // Debug log
+      
       
       // Check if the user is actually locked now
       const updatedUsers = users.filter(u => u.name === username);
       if (updatedUsers.length > 0) {
-        console.log(`User ${username} status after lock operation:`, updatedUsers[0].status);
+
       }
     } catch (err: any) {
       console.error('Failed to lock/unlock user:', err);
@@ -440,7 +440,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
                           title="Edit User"
                           onClick={() => handleEditUser(user.id)}
                         >
-                          ✎
+                          <Edit size={18} />
                         </button>
                         <button 
                           className={`table-action-btn lock-btn ${user.status === 'inactive' ? 'locked' : ''}`}
@@ -448,14 +448,18 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) => {
                           onClick={() => handleLockUser(user.name, user.status === 'active')}
                           disabled={lockingUser === user.name}
                         >
-                          {lockingUser === user.name ? '⏳' : (user.status === 'active' ? '🔒' : '🔓')}
+                          {lockingUser === user.name ? (
+                            <Clock size={18} />
+                          ) : (
+                            <Lock size={18} />
+                          )}
                         </button>
                         <button 
                           className="table-action-btn delete-btn" 
                           title="Remove User"
                           onClick={() => handleDeleteUser(user.id)}
                         >
-                          🗑
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     )}

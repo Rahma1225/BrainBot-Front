@@ -128,6 +128,43 @@ export interface Role {
   normalizedName: string;
 }
 
+// Evaluation interfaces - Updated to match backend schema
+export interface Question {
+  Text: string;
+  Options: string[];
+  CorrectIndex: number;
+}
+
+// Interface for creating questions - matches backend schema
+export interface CreateQuestionDto {
+  Text: string;
+  Options: string[];
+  CorrectIndex: number;
+}
+
+export interface Evaluation {
+  Id?: string;
+  id?: string;
+  Title?: string;
+  title?: string;
+  Questions?: Question[];
+  questions?: Question[];
+}
+
+// CreateEvaluationDto - matches backend schema
+export interface CreateEvaluationDto {
+  Id: string; // Required Id field that backend expects
+  Title: string;
+  Questions: CreateQuestionDto[];
+}
+
+// UpdateEvaluationDto - matches backend schema
+export interface UpdateEvaluationDto {
+  Id: string;
+  Title: string;
+  Questions: Question[];
+}
+
 class ApiService {
   private async request<T>(
     endpoint: string,
@@ -135,6 +172,8 @@ class ApiService {
     baseUrlOverride?: string
   ): Promise<T> {
     const url = `${baseUrlOverride || API_BASE_URL}${endpoint}`;
+    
+
     
     // Get stored token
     const token = getStoredToken();
@@ -153,11 +192,25 @@ class ApiService {
       
       if (!response.ok) {
         let errorData = await response.json().catch(() => ({}));
+        console.error('Response not ok:', response.status, errorData);
         // Always throw the error data object if present
         throw errorData && Object.keys(errorData).length > 0 ? errorData : new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      // For DELETE requests or when there's no content, don't try to parse JSON
+      if (options.method === 'DELETE' || response.status === 204) {
+        return {} as T;
+      }
+
+      // Check if there's content to parse
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        return result;
+      } else {
+        // If no JSON content type, return empty object for void operations
+        return {} as T;
+      }
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
@@ -524,6 +577,75 @@ class ApiService {
     );
   }
 
+  // Evaluation Management API
+  async getEvaluations(): Promise<Evaluation[]> {
+    try {
+      const result = await this.request<Evaluation[]>('/evaluations', {}, API_USER_BASE_URL);
+      return result;
+    } catch (error) {
+      console.error('getEvaluations error:', error);
+      throw error;
+    }
+  }
+
+  async getEvaluationById(id: string): Promise<Evaluation> {
+    return this.request<Evaluation>(`/evaluations/${id}`, {}, API_USER_BASE_URL);
+  }
+
+  async createEvaluation(evaluationData: CreateEvaluationDto): Promise<Evaluation> {
+    return this.request<Evaluation>('/evaluations', {
+      method: 'POST',
+      body: JSON.stringify(evaluationData),
+    }, API_USER_BASE_URL);
+  }
+
+  async updateEvaluation(id: string, evaluationData: UpdateEvaluationDto): Promise<void> {
+    return this.request<void>(`/evaluations/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(evaluationData),
+    }, API_USER_BASE_URL);
+  }
+
+  async deleteEvaluation(id: string): Promise<void> {
+    return this.request<void>(`/evaluations/${id}`, {
+      method: 'DELETE',
+    }, API_USER_BASE_URL);
+  }
+
+  // Quiz Results API
+  async saveQuizResult(resultData: {
+    evaluationId: string;
+    score: number;
+    totalQuestions: number;
+    correctAnswers: number;
+    completedAt: string;
+  }): Promise<{ message: string }> {
+    return this.request<{ message: string }>('/quiz-results', {
+      method: 'POST',
+      body: JSON.stringify(resultData),
+    }, API_USER_BASE_URL);
+  }
+
+  async getQuizResults(): Promise<Array<{
+    id: string;
+    evaluationId: string;
+    evaluationTitle: string;
+    score: number;
+    totalQuestions: number;
+    correctAnswers: number;
+    completedAt: string;
+  }>> {
+    return this.request<Array<{
+      id: string;
+      evaluationId: string;
+      evaluationTitle: string;
+      score: number;
+      totalQuestions: number;
+      correctAnswers: number;
+      completedAt: string;
+    }>>('/quiz-results', {}, API_USER_BASE_URL);
+  }
+
   // Dashboard Statistics API
   async getDashboardStats(): Promise<{
     totalUsers: number;
@@ -570,7 +692,6 @@ class ApiService {
     };
       }> {
     // Since the backend endpoint doesn't exist, calculate from existing data
-    console.log('Dashboard stats endpoint not available, calculating from existing data...');
       
     const [users, documents, conversations] = await Promise.all([
       this.getUsers().catch(() => []),
@@ -595,7 +716,7 @@ class ApiService {
         if (message.feedback === 'dislike') dislikeCount++;
       });
     } catch (error) {
-      console.log('Could not fetch message feedback, using default values');
+      // Could not fetch message feedback, using default values
     }
 
     // Calculate conversation stats based on current date

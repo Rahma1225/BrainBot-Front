@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MessageCircle, LogOut, Bot, Users, ChevronDown, Lock, FileUp, BarChart3, UserCheck } from 'lucide-react';
+import { MessageCircle, LogOut, Bot, Users, ChevronDown, Lock, FileUp, BarChart3, UserCheck, ClipboardList } from 'lucide-react';
 import { apiService } from '../services/api';
 import './Navbar.css';
 
@@ -152,14 +152,21 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, currentUser }) => {
                 )}
                 {currentUser.role === 'admin' && (
                   <Link 
-                    to="/upload" 
+                    to="/registration-requests" 
                     className="dropdown-item"
                     onClick={handleMenuItemClick}
                     role="menuitem"
                     tabIndex={0}
                   >
-                    <FileUp size={16} aria-hidden="true" />
-                    <span>Upload Files</span>
+                    <div className="menu-item-content">
+                      <UserCheck size={16} aria-hidden="true" />
+                      <span>Registration Requests</span>
+                      {pendingRequestsCount > 0 && (
+                        <div className="notification-badge">
+                          {pendingRequestsCount > 9 ? '9+' : pendingRequestsCount}
+                        </div>
+                      )}
+                    </div>
                   </Link>
                 )}
                 {currentUser.role === 'admin' && (
@@ -176,21 +183,39 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, currentUser }) => {
                 )}
                 {currentUser.role === 'admin' && (
                   <Link 
-                    to="/registration-requests" 
+                    to="/upload" 
                     className="dropdown-item"
                     onClick={handleMenuItemClick}
                     role="menuitem"
                     tabIndex={0}
                   >
-                    <div className="menu-item-content">
-                      <UserCheck size={16} aria-hidden="true" />
-                      <span>Registration Requests</span>
-                      {pendingRequestsCount > 0 && (
-                        <div className="notification-badge">
-                          {pendingRequestsCount > 9 ? '9+' : pendingRequestsCount}
-                        </div>
-                      )}
-                    </div>
+                    <FileUp size={16} aria-hidden="true" />
+                    <span>Upload Files</span>
+                  </Link>
+                )}
+                {currentUser.role === 'admin' && (
+                  <Link 
+                    to="/evaluation-management" 
+                    className="dropdown-item"
+                    onClick={handleMenuItemClick}
+                    role="menuitem"
+                    tabIndex={0}
+                  >
+                    <ClipboardList size={16} aria-hidden="true" />
+                    <span>Evaluation Management</span>
+                  </Link>
+                )}
+                
+                {(currentUser.role === 'support' || currentUser.role === 'consultant') && (
+                  <Link 
+                    to="/quiz-taking" 
+                    className="dropdown-item"
+                    onClick={handleMenuItemClick}
+                    role="menuitem"
+                    tabIndex={0}
+                  >
+                    <ClipboardList size={16} aria-hidden="true" />
+                    <span>Take Quizzes</span>
                   </Link>
                 )}
                 

@@ -74,7 +74,7 @@ const RegistrationRequests: React.FC = () => {
   const formatDate = (dateString: string) => {
     try {
       // Debug: Log the incoming date string
-      console.log('Incoming date string:', dateString);
+  
       
       // Handle different date formats from backend
       let date: Date;

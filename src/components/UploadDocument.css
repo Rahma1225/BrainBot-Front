@@ -48,6 +48,13 @@
   align-items: center;
   gap: 18px;
 }
+
+.upload-page-modern-wrapper .upload-page-header > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
 .upload-page-modern-wrapper .upload-page-header-icon {
   color: #2563eb;
   background: #e0e7ef;
@@ -67,7 +74,7 @@
 .upload-page-modern-wrapper .upload-page-header-sub {
   color: #64748b;
   font-size: 1.08rem;
-  margin-top: 0.2rem;
+  margin: 0;
 }
 .upload-page-modern-wrapper .upload-page-main {
   width: 100%;

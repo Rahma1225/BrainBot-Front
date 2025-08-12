@@ -78,7 +78,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
   const fetchMessages = async (conversationId: string) => {
     try {
       const history = await apiService.getConversationMessages(conversationId);
-      console.log('Fetched conversation messages:', history); // Debug log
+      
       setMessages(
         history.map((conv, idx) => [
           { 
@@ -265,7 +265,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
         conversationId = newConv.id;
       }
       // Send to backend and get bot response
-      console.log('Sending message with role:', currentUser?.role); // Debug log
+
       const botMsg = await apiService.addMessageToConversation(conversationId, inputMessage, currentUser?.role);
       // Animate bot response
       setAnimatingBot(true);
@@ -343,7 +343,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ currentUser }) => {
   // Handle feedback submission
   const handleFeedback = async (messageId: string, feedback: 'like' | 'dislike') => {
     try {
-      console.log('Submitting feedback:', { messageId, feedback }); // Debug log
+  
       
       // Prevent duplicate submissions
       const message = messages.find(msg => msg.messageId === messageId);

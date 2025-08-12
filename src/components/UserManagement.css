@@ -24,6 +24,13 @@
   z-index: 10;
 }
 
+.user-management-page-modern-wrapper .user-management-page-header > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 .user-management-page-modern-wrapper .user-management-page-header-icon {
   color: #2563eb;
   background: #e0e7ef;
@@ -45,7 +52,7 @@
 .user-management-page-modern-wrapper .user-management-page-header-sub {
   color: #64748b;
   font-size: 1.08rem;
-  margin-top: 0.2rem;
+  margin: 0;
 }
 
 .user-management-page-modern-wrapper .user-management-page-main {
@@ -872,12 +879,18 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: linear-gradient(145deg, #ffffff, #f8fafc);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1);
-  font-weight: 600;
-  font-size: 18px;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(10px);
+}
+
+.table-action-btn svg {
+  width: 18px;
+  height: 18px;
+  color: currentColor;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
 }
 
 .table-action-btn::before {
@@ -910,8 +923,7 @@
 .table-action-btn.lock-btn {
   color: #f59e0b;
   border-color: #f59e0b;
-  background: linear-gradient(145deg, #ffffff, #fffbeb);
-  font-size: 16px;
+  background: transparent;
   position: relative;
 }
 
@@ -925,7 +937,7 @@
 .table-action-btn.lock-btn.locked {
   color: #dc2626;
   border-color: #dc2626;
-  background: linear-gradient(145deg, #ffffff, #fef2f2);
+  background: transparent;
 }
 
 .table-action-btn.lock-btn.locked:hover {
@@ -1018,15 +1030,25 @@
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   background: none;
   border: none;
   color: #3b82f6;
-  font-size: 1.08rem;
-  font-weight: 600;
   cursor: pointer;
   transition: color 0.2s;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+}
+
+.user-management-page-modern-wrapper .user-management-back-btn-fixed svg {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
 }
 
 .user-management-page-modern-wrapper .user-management-back-btn-fixed:hover {

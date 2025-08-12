@@ -27,6 +27,13 @@
   z-index: 10;
 }
 
+.registration-requests-page-modern-wrapper .registration-requests-page-header > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 .registration-requests-page-modern-wrapper .registration-requests-page-header-icon {
   color: #2563eb;
   background: #e0e7ef;
@@ -48,7 +55,7 @@
 .registration-requests-page-modern-wrapper .registration-requests-page-header-sub {
   color: #64748b;
   font-size: 1.08rem;
-  margin-top: 0.2rem;
+  margin: 0;
 }
 
 .registration-requests-page-modern-wrapper .registration-requests-page-main {

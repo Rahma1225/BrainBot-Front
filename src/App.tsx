@@ -14,6 +14,8 @@ import RegistrationRequests from './components/RegistrationRequests';
 import './App.css';
 import UploadDocument from './components/UploadDocument';
 import Dashboard from './components/Dashboard';
+import EvaluationManagement from './components/EvaluationManagement';
+import QuizTaking from './components/QuizTaking';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -227,6 +229,35 @@ function App() {
                     <Navigate to="/chatbot" replace />
                   )}
                 </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/evaluation-management"
+            element={
+              <ProtectedRoute>
+                {currentUser.role === 'admin' ? (
+                  <Layout onLogout={handleLogout} currentUser={currentUser}>
+                    <EvaluationManagement />
+                  </Layout>
+                ) : (
+                  <Navigate to="/chatbot" replace />
+                )}
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/quiz-taking"
+            element={
+              <ProtectedRoute>
+                {(currentUser.role === 'support' || currentUser.role === 'consultant') ? (
+                  <Layout onLogout={handleLogout} currentUser={currentUser}>
+                    <QuizTaking currentUser={currentUser} />
+                  </Layout>
+                ) : (
+                  <Navigate to="/chatbot" replace />
+                )}
               </ProtectedRoute>
             }
           />
