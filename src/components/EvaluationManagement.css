@@ -284,9 +284,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 14px 20px;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -528,12 +528,12 @@
 
 
 .modal-submit-btn {
-  padding: 0.6rem 1.2rem;
+  padding: 0.8rem 1.5rem;
   background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -541,7 +541,7 @@
   gap: 0.5rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  width: 150px;
+  width: 180px;
   justify-content: center;
   position: relative;
   overflow: hidden;
@@ -553,9 +553,9 @@
 
 /* Smaller button for question updates */
 .question-block .modal-submit-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  width: 100px;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.95rem;
+  width: 120px;
   gap: 4px;
 }
 
@@ -599,9 +599,9 @@
   background: #f3f4f6;
   color: #374151;
   border: 1px solid #d1d5db;
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.3rem;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;

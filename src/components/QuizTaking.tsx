@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ClipboardList, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ClipboardList, Clock, CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
 import { apiService } from '../services/api';
 import type { Evaluation, Question } from '../services/api';
 import './QuizTaking.css';
@@ -391,11 +391,14 @@ const QuizTaking: React.FC<QuizTakingProps> = ({ currentUser }) => {
           )}
         </div>
 
-        {/* Results Modal */}
-        {quizCompleted && quizResult && (
-          <div className="results-modal-overlay">
-            <div className="results-modal">
-              <div className="results-header">
+                 {/* Results Modal */}
+         {quizCompleted && quizResult && (
+           <div className="results-modal-overlay">
+             <div className="results-modal">
+               <button className="modal-close-btn" onClick={resetQuiz}>
+                 <X size={20} />
+               </button>
+               <div className="results-header">
                 <h2>Quiz Results</h2>
                 <div className={`score-circle ${quizResult.score >= 70 ? 'pass' : 'fail'}`}>
                   <span className="score-number">{quizResult.score}%</span>
